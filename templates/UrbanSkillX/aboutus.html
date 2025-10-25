@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<!-- Add class to html tag for transitions -->
+<html lang="en" class="transition-colors duration-300">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Us | UrbanSkillX</title>
+
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    /* ======== BASIC RESET ======== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    /* ======== NEW: CSS VARIABLES ======== */
+    :root {
+      /* Light Mode */
+      --primary-bg: #f8fafc;
+      --card-bg: #ffffff;
+      --header-bg: #ffffff;
+      --footer-bg: #0078d7;
+      --text-color: #333;
+      --text-light: #444;
+      --primary-blue: #0078d7;
+      --primary-teal: #00bfa5;
+      --list-bg: #e3f2fd;
+      --list-hover-bg: #bbdefb;
+      --toggle-btn-bg: #E5E7EB;
+      --border-light: #E5E7EB;
+      --text-nav: #4b5563;
+       /* Added primary accent for consistency */
+      --primary-accent: #A78BFA;
+    }
+
+    html.dark {
+      /* Dark Mode */
+      --primary-bg: #111827;
+      --card-bg: #1f2937;
+      --header-bg: #1f2937;
+      --footer-bg: #005a9e;
+      --text-color: #d1d5db;
+      --text-light: #b0b8c4;
+      --primary-blue: #259dff;
+      --primary-teal: #14f5d0;
+      --list-bg: #374151;
+      --list-hover-bg: #4b5563;
+      --toggle-btn-bg: #374151;
+      --border-light: #374151;
+      --text-nav: #9CA3AF;
+    }
+
+    html {
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    body {
+      background-color: var(--primary-bg);
+      color: var(--text-color);
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* ======== NEW: STANDARD HEADER ======== */
+    header {
+      background-color: var(--header-bg);
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+      padding: 1.5rem 0;
+      transition: background-color 0.3s;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .nav-container {
+      max-width: 1280px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-container h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #7c3aed;
+      letter-spacing: 0.05em;
+    }
+    .nav-container h1 a {
+      text-decoration: none;
+      color: inherit;
+    }
+    header nav {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    header nav a {
+      color: var(--text-nav);
+      transition: color 0.3s;
+      font-weight: 500;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      text-decoration: none;
+    }
+    header nav a:hover {
+      color: #7c3aed;
+    }
+
+    #theme-toggle {
+      background-color: var(--toggle-btn-bg);
+      color: var(--text-color); /* Changed from text-dark to text-color for better dark mode */
+      padding: 8px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      border: none;
+      transition: all 0.3s ease;
+    }
+    #theme-toggle:hover {
+      background-color: var(--primary-accent); /* Use variable */
+      color: white;
+    }
+    #theme-toggle i {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* ======== HERO HEADER (was old header) ======== */
+    .hero-header {
+      background: linear-gradient(135deg, var(--primary-blue), var(--primary-teal));
+      color: white;
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .hero-header h2 { /* Changed from h1 to avoid duplicate h1 */
+      font-size: 2.8rem;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .hero-header p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    /* ======== ABOUT SECTION ======== */
+    section {
+      max-width: 1000px;
+      margin: 60px auto;
+      background: var(--card-bg);
+      border-radius: 15px;
+      padding: 40px 50px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    section h3 { /* Changed from h2 */
+      color: var(--primary-blue);
+      font-size: 2rem;
+      margin-bottom: 20px;
+      position: relative;
+      transition: color 0.3s;
+    }
+
+    section h3::after { /* Changed from h2 */
+      content: "";
+      width: 60px;
+      height: 4px;
+      background: var(--primary-teal);
+      position: absolute;
+      left: 0;
+      bottom: -8px;
+      border-radius: 2px;
+    }
+
+    section p {
+      margin-bottom: 20px;
+      color: var(--text-light);
+      font-size: 1.05rem;
+      transition: color 0.3s;
+    }
+
+    ul {
+      list-style: none;
+      margin: 20px 0;
+    }
+
+    ul li {
+      background: var(--list-bg);
+      margin: 10px 0;
+      padding: 12px 18px;
+      border-left: 4px solid var(--primary-blue);
+      border-radius: 8px;
+      transition: background-color 0.3s, border-color 0.3s, transform 0.3s; /* Added transitions */
+    }
+
+    ul li:hover {
+      background: var(--list-hover-bg);
+      transform: translateX(5px);
+    }
+
+    /* ======== CTA BUTTON ======== */
+    .cta {
+      display: block;
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .cta button {
+      background: linear-gradient(135deg, var(--primary-blue), var(--primary-teal));
+      color: white;
+      padding: 12px 30px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s; /* Added transform/shadow */
+    }
+
+    .cta button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ======== FOOTER ======== */
+    footer {
+      background: var(--footer-bg);
+      color: white;
+      text-align: center;
+      padding: 20px 10px;
+      font-size: 0.9rem;
+      margin-top: 50px;
+      transition: background-color 0.3s;
+    }
+
+    /* ======== RESPONSIVE ======== */
+    @media (max-width: 768px) {
+      section {
+        padding: 30px 20px;
+        margin: 30px 10px;
+      }
+
+      .hero-header h2 {
+        font-size: 2rem;
+      }
+
+      .nav-container { /* Adjust nav padding on smaller screens */
+          padding-left: 1rem;
+          padding-right: 1rem;
+      }
+      header nav a { /* Reduce nav link padding */
+           padding-left: 0.5rem;
+           padding-right: 0.5rem;
+      }
+
+    }
+  </style>
+</head>
+<!-- REMOVED onload="" -->
+<body>
+
+  <header>
+    <div class="nav-container">
+      <h1><a href="{% url "homepage" %}">UrbanSkillX</a></h1>
+      <nav>
+        <a href="{% url "homepage" %}">Back to Home</a>
+        <button id="theme-toggle" title="Toggle dark mode">
+          <i></i> <!-- Icon placeholder -->
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="hero-header">
+    <h2>About Us</h2>
+    <p>Connecting Skills. Empowering Communities. Building the Future.</p>
+  </div>
+
+  <section>
+    <h3>Who We Are</h3>
+    <p>
+      In today’s fast-paced urban world, countless individuals hold incredible talents —
+      from digital innovation and language fluency to traditional craftsmanship and
+      fitness training. Yet, most never get the chance to share or monetize these
+      abilities effectively within their local communities.
+    </p>
+    <p>
+      <strong>UrbanSkillX</strong> bridges this gap. We are a
+      <strong>community-driven skill-sharing platform</strong> designed to connect skilled
+      individuals with those eager to learn, collaborate, or get help nearby. Whether
+      you want to <em>teach</em>, <em>learn</em>, or <em>co-create</em>, UrbanSkillX makes it
+      simple, secure, and impactful.
+    </p>
+
+    <h3>Our Mission</h3>
+    <p>
+      To <strong>empower local communities</strong> by making skill exchange accessible,
+      trustworthy, and rewarding — fostering collaboration, growth, and inclusivity
+      for all.
+    </p>
+
+    <h3>What We Offer</h3>
+    <ul>
+      <li>✔ Verified Profiles & Peer Reviews</li>
+      <li>✔ Geo-location Skill Matching</li>
+      <li>✔ Easy Scheduling & Reminders</li>
+      <li>✔ Ratings, Testimonials & Endorsements</li>
+      <li>✔ Community Collaboration Projects</li>
+      <li>✔ Inclusive & Accessible Design</li>
+      <li>✔ Reward System with Tokens or Credits</li>
+    </ul>
+
+    <h3>Our Vision</h3>
+    <p>
+      To transform cities into <strong>connected ecosystems of shared knowledge</strong>,
+      where every individual — regardless of background or ability — can grow,
+      contribute, and thrive through the power of skills.
+    </p>
+
+    <div class="cta">
+      <button id="joinBtn" onclick="window.location.href = '{% url "signup" %}'">Join UrbanSkillX Today</button>
+    </div>
+  </section>
+
+  <footer>
+    &copy; 2025 UrbanSkillX | Empowering Communities Through Skills
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        /* --- DARK MODE SCRIPT (ALWAYS MOON)--- */
+        const htmlEl = document.documentElement;
+        const themeToggleBtn = document.getElementById('theme-toggle');
+
+        if (themeToggleBtn) {
+            const iconEl = themeToggleBtn.querySelector('i');
+
+            // 1. Check localStorage on page load and apply class
+            const savedTheme = localStorage.getItem('theme');
+            const isDark = savedTheme === 'dark';
+
+            if (isDark) {
+                htmlEl.classList.add('dark');
+            } else {
+                htmlEl.classList.remove('dark');
+            }
+
+            // 2. Set icon attribute *always* to 'moon'
+            if (iconEl) {
+                iconEl.setAttribute('data-lucide', 'moon');
+            }
+
+            // 3. Add click listener
+            themeToggleBtn.addEventListener('click', () => {
+                htmlEl.classList.toggle('dark');
+                const isDarkNow = htmlEl.classList.contains('dark');
+                localStorage.setItem('theme', isDarkNow ? 'dark' : 'light');
+                // No need to change icon attribute or call createIcons here
+            });
+        }
+        /* --- END DARK MODE SCRIPT --- */
+
+
+        // ======== SIMPLE JAVASCRIPT INTERACTION (ALERT REMOVED) ========
+        const joinButton = document.getElementById("joinBtn");
+        
+
+
+        // 4. Final lucide call after everything else is set up
+        lucide.createIcons();
+    });
+  </script>
+</body>
+</html>
+

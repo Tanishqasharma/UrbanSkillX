@@ -1,0 +1,36 @@
+{% extends "layout.html" %} 
+{% load static %}
+{% block title %}
+    User Login
+{% endblock %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static "UrbanSkillX/form-styles.css" %}">
+{% endblock %}
+
+{% block body %}
+  <form method="post" novalidate>
+    <h2>Log In</h2>
+    {% csrf_token %}
+    
+    <div class="form-wrapper">
+        {% for field in form %}
+            <p class="form-row">
+                {{ field.label_tag }}
+                {{ field }}
+                {{ field.errors }}
+                {% if field.help_text %}
+                    <span class="helptext">{{ field.help_text|safe }}</span>
+                {% endif %}
+            </p>
+        {% endfor %}
+    </div>
+
+    <button type="submit">Log In</button>
+  </form>
+
+  <div class="signup-link-container">
+    <span>Don't have an account?</span>
+    <a href="{% url 'signup' %}">Create a new account</a>
+  </div>
+{% endblock %}

@@ -1,0 +1,309 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Profile | Urban Skill Exchange</title>
+    <!-- Load Lucide Icons for aesthetic detail -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* --- CORE THEME AND LAYOUT --- */
+        :root {
+            --primary-bg: #F0F4F8; /* Pale Blue/Gray */
+            --primary-accent: #A78BFA; /* Soft Lavender */
+            --accent-mint: #6EE7B7; /* Pale Mint Green */
+            --text-dark: #374151;
+            --text-light: #4B5563;
+            --border-light: #E5E7EB;
+            --shadow-subtle: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --star-color: #FFD700;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-dark);
+            padding: 0;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .container {
+            /* FIX: Full width utilization */
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 30px;
+            width: 100%; 
+        }
+
+        /* --- CARD STYLING --- */
+        .card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid var(--border-light);
+            margin-bottom: 20px;
+        }
+
+        /* --- INPUT STYLING --- */
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            margin-top: 5px;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+            outline: none;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        /* --- 1. PROFILE SECTION (LEFT COLUMN) --- */
+        .sidebar {
+            width: 40%; 
+            flex-shrink: 0;
+        }
+
+        .profile-header {
+            text-align: center;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px auto;
+            border: 4px solid var(--primary-accent);
+        }
+        
+        /* --- 2. CREDITS/INCENTIVE SYSTEM --- */
+        .btn-save {
+            background-color: var(--primary-accent);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 20px;
+            width: 100%;
+        }
+        .btn-save:hover {
+            background-color: #8B5CF6;
+        }
+
+        /* --- MAIN CONTENT (RIGHT COLUMN) --- */
+        .main-content {
+            flex-grow: 1;
+            width: 60%; 
+        }
+
+        /* Elements that are placeholders/hidden during setup */
+        .hidden-in-form {
+            display: none;
+        }
+        
+        /* --- PORTFOLIO LINKS STYLING (UPDATED FOR INPUTS) --- */
+        .portfolio-links {
+            padding: 0;
+            /* Use Flex wrap instead of Grid to better handle stacked inputs */
+            display: flex; 
+            flex-direction: column;
+            gap: 10px;
+        }
+        .portfolio-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .portfolio-group i {
+            color: var(--text-light);
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+        
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 10px;
+            }
+            .sidebar, .main-content {
+                width: 100%; /* Full width on mobile */
+            }
+        }
+    </style>
+</head>
+<body onload="lucide.createIcons()">
+
+    <!-- 1. Header Navigation (Simplified) -->
+    <header style="background-color: white; box-shadow: var(--shadow-subtle); padding: 15px 0;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; justify-content: space-between; align-items: center;">
+            <h1 style="font-size: 1.5rem; font-weight: 800; color: #7C3AED;">UrbanSkillX | Setup</h1>
+            <nav>
+                <!-- This link will likely redirect to the full platform after setup -->
+                <a href="{% url "homepage" %}" style="color: var(--text-light); text-decoration: none; font-weight: 600;">Back to Home</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- 2. Profile Setup Form -->
+    <form id="profile-setup-form">
+        <div class="container">
+            
+            <!-- LEFT COLUMN: Profile Inputs -->
+            <aside class="sidebar">
+                
+                <!-- A. PROFILE & BIO INPUTS -->
+                <div class="card">
+                    <div class="profile-header">
+                        <img src="https://placehold.co/120x120/A78BFA/ffffff?text=U" alt="Profile Picture Placeholder" class="profile-img">
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="profile-pic-upload" style="color: var(--primary-accent); cursor: pointer; text-decoration: underline;">Upload New Photo</label>
+                            <input type="file" id="profile-pic-upload" style="display: none;">
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 15px;">
+                            <label for="full-name">Full Name</label>
+                            <input type="text" id="full-name" class="form-input" placeholder="e.g., Tanishqa Sharma" value="Tanishqa Sharma" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="user-title">Title / Role</label>
+                            <input type="text" id="user-title" class="form-input" placeholder="e.g., Frontend Developer | Available Locally" value="Frontend Developer | Available Locally">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label for="bio-text">About & Bio</label>
+                        <textarea id="bio-text" class="form-textarea" rows="5" placeholder="Describe your experience and interests (e.g., Full-Stack developer focused on building UIs...)">Full-Stack developer focused on building high-performance UIs using React. Expertise in responsive design, CSS architecture, and delivering polished user experiences. Enthusiastic about local community projects!</textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="core-skills">Core Skills (Comma Separated)</label>
+                        <input type="text" id="core-skills" class="form-input" placeholder="e.g., ReactJS, Python, UI/UX, Git" value="ReactJS, CSS/Sass, UI/UX, Python (Flask), Git Version Control">
+                    </div>
+                </div>
+
+                <!-- C. SAVE BUTTON -->
+                <button type="submit" class="btn-save" onclick="window.location.href = '{% url 'profile' %}'">
+                    Save Profile & Continue
+                </button>
+            </aside>
+
+            <!-- RIGHT COLUMN: Portfolio Links & Settings -->
+            <section class="main-content">
+                
+                <!-- NEW: PORTFOLIO & WORK LINKS INPUTS -->
+                <div class="card">
+                    <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 20px;">Portfolio & Work Links</h2>
+                    
+                    <div class="portfolio-links">
+                        
+                        <div class="form-group portfolio-group">
+                            <i data-lucide="github"></i>
+                            <input type="url" id="github-url" class="form-input" placeholder="GitHub Profile URL">
+                        </div>
+                        
+                        <div class="form-group portfolio-group">
+                            <i data-lucide="link"></i>
+                            <input type="url" id="website-url" class="form-input" placeholder="Personal Website URL">
+                        </div>
+                        
+                        <div class="form-group portfolio-group">
+                            <i data-lucide="pen-tool"></i>
+                            <input type="url" id="design-url" class="form-input" placeholder="Design Portfolio (Dribbble/Behance) URL">
+                        </div>
+                        
+                        <div class="form-group portfolio-group">
+                            <i data-lucide="linkedin"></i>
+                            <input type="url" id="linkedin-url" class="form-input" placeholder="LinkedIn Profile URL">
+                        </div>
+                        
+                        <div class="form-group portfolio-group">
+                            <i data-lucide="server"></i>
+                            <input type="url" id="demos-url" class="form-input" placeholder="Live Demos / Deployment Links URL">
+                        </div>
+                        
+                        <div class="form-group portfolio-group">
+                            <i data-lucide="briefcase"></i>
+                            <input type="url" id="resume-url" class="form-input" placeholder="Resume / CV Link URL">
+                        </div>
+                        
+                    </div>
+                </div>
+                
+                <!-- C. BONUS: OFFERING TYPE -->
+                 <div class="card" style="margin-top: 30px;">
+                    <div class="form-group">
+                        <label for="offering-type" style="font-size: 1rem; font-weight: 600; margin-bottom: 10px;">Primary Offering Type</label>
+                        <select id="offering-type" class="form-select">
+                            <option>Offer Skills (Provider)</option>
+                            <option>Seek Skills (Learner)</option>
+                            <option>Both</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Placeholder card remains hidden -->
+                <div class="card hidden-in-form">
+                    <h2 style="font-size: 1.5rem; font-weight: 700;">Reviews & Ratings (Pending)</h2>
+                    <p style="color: var(--text-light); margin-top: 10px;">Your ratings will appear here after you complete your first few sessions.</p>
+                </div>
+            </section>
+
+        </div>
+    </form>
+
+    <!-- Ensure all icons are rendered -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+             lucide.createIcons();
+             
+             document.getElementById('profile-setup-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert("Profile Saved! Welcome to UrbanSkillX.");
+                // In a real application, you would send this data to the backend here.
+                // After successful save, you would redirect the user to their full dashboard.
+                window.location.href = '{% url "homepage" %}'; 
+             });
+             
+             document.getElementById('profile-pic-upload').addEventListener('click', function() {
+                 // Mock: In a real app, this would open the file picker
+                 alert("Photo upload feature coming soon!");
+             });
+
+             document.querySelector('.profile-header input[type="file"]').addEventListener('change', function() {
+                const file = this.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.querySelector('.profile-img').src = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

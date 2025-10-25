@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<!-- Add class for transitions -->
+<html lang="en" class="transition-colors duration-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile | Urban Skill Exchange</title>
+    <!-- Load Lucide Icons for aesthetic detail -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* --- CORE THEME AND LAYOUT --- */
+        :root {
+            /* Light Mode */
+            --primary-bg: #F0F4F8; /* Pale Blue/Gray */
+            --primary-accent: #A78BFA; /* Soft Lavender */
+            --accent-mint: #6EE7B7; /* Pale Mint Green */
+            --text-dark: #374151;
+            --text-light: #4B5563;
+            --border-light: #E5E7EB;
+            --shadow-subtle: 0 4px 6px rgba(0, 0, 0, 0.05);
+            --star-color: #FFD700; /* Gold for stars */
+            --card-bg: #ffffff;
+            --header-bg: #ffffff;
+            --tag-bg: #F3E8FF; /* Skill tag background */
+            --tag-text: #7C3AED; /* Skill tag text */
+            --badge-icon-bg: var(--primary-accent); /* Default badge icon bg */
+            --toggle-btn-bg: #E5E7EB;
+            --toggle-btn-text: #374151;
+        }
+
+        /* --- Dark Mode Variables --- */
+        html.dark {
+            --primary-bg: #111827;
+            --text-dark: #D1D5DB;
+            --text-light: #9CA3AF;
+            --border-light: #374151;
+            --shadow-subtle: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --card-bg: #1F2937;
+            --header-bg: #1F2937;
+            --tag-bg: #3730A3; /* Darker purple */
+            --tag-text: #C4B5FD; /* Lighter purple */
+            --badge-icon-bg: #8B5CF6; /* Brighter purple for dark badges */
+            --toggle-btn-bg: #374151;
+            --toggle-btn-text: #D1D5DB;
+        }
+
+         /* --- Base Styles --- */
+        html {
+            transition: background-color 0.3s, color 0.3s;
+        }
+        body {
+            background-color: var(--primary-bg);
+            font-family: 'Inter', sans-serif; /* Consistent font */
+            color: var(--text-dark);
+            padding: 0;
+            margin: 0;
+            line-height: 1.5;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+            display: flex;
+            gap: 30px;
+        }
+
+        /* --- HEADER --- */
+         header {
+            background-color: var(--header-bg);
+            box-shadow: var(--shadow-subtle);
+            padding: 15px 0;
+            transition: background-color 0.3s;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+         }
+         header > div {
+             max-width: 1200px;
+             margin: 0 auto;
+             padding: 0 20px;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+         }
+         header h1 {
+             font-size: 1.5rem;
+             font-weight: 800;
+             color: #7C3AED; /* Brand color */
+         }
+          header h1 a { /* Style link if used inside h1 */
+             text-decoration: none;
+             color: inherit;
+         }
+         header nav {
+             display: flex;
+             align-items: center;
+             gap: 16px;
+         }
+         header nav a {
+              color: var(--text-light);
+              text-decoration: none;
+              font-weight: 600;
+              transition: color 0.3s;
+         }
+         header nav a:hover {
+             color: #7C3AED; /* Brand color on hover */
+         }
+
+
+        /* --- CARD STYLING --- */
+        .card {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-subtle);
+            border: 1px solid var(--border-light);
+            margin-bottom: 20px;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        /* --- 1. PROFILE SECTION (LEFT COLUMN) --- */
+        .sidebar {
+            width: 300px; /* Fixed width sidebar */
+            flex-shrink: 0;
+        }
+
+        .profile-header {
+            text-align: center;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+        .profile-img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px auto;
+            border: 4px solid var(--primary-accent);
+            display: block;
+        }
+        .profile-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--text-dark); /* Ensure correct color */
+            transition: color 0.3s;
+        }
+        .profile-location {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        /* Skills List */
+        .skills-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+            justify-content: center; /* Center tags */
+        }
+        .skill-tag {
+            background-color: var(--tag-bg);
+            color: var(--tag-text);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Bio */
+         .bio-section h3 { /* Style headings within cards */
+             font-size: 1rem;
+             font-weight: 600;
+             margin-bottom: 10px;
+             color: var(--text-dark);
+             transition: color 0.3s;
+         }
+        .bio-text {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            transition: color 0.3s;
+        }
+
+        /* --- 2. CREDITS/INCENTIVE SYSTEM --- */
+        .credits-section {
+            text-align: center;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+        }
+        .credits-title {
+            font-size: 1rem;
+            color: var(--text-light);
+            margin-bottom: 5px;
+            transition: color 0.3s;
+        }
+        .credits-count {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary-accent);
+        }
+        .btn-redeem {
+            background-color: var(--accent-mint);
+            color: #374151; /* Dark text on mint */
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+        .btn-redeem:hover {
+            background-color: #34D399; /* Darker mint */
+            color: white; /* White text on hover */
+        }
+
+        /* --- 3. BADGES SECTION --- */
+         .badges-section h3 {
+             font-size: 1rem;
+             font-weight: 600;
+             margin-bottom: 20px;
+             text-align: center;
+             color: var(--text-dark);
+             transition: color 0.3s;
+         }
+        .badges-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+        .badge-item {
+            text-align: center;
+            width: 80px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-light); /* Lighter text for badge name */
+            transition: color 0.3s;
+        }
+        .badge-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--badge-icon-bg); /* Use var */
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 5px auto;
+            transition: background-color 0.3s;
+        }
+         /* Specific badge colors */
+         .badge-icon.mint { background-color: var(--accent-mint); color: #374151; }
+         .badge-icon.pink { background-color: #FF5577; }
+
+
+        /* --- MAIN CONTENT (RIGHT COLUMN) --- */
+        .main-content {
+            flex-grow: 1;
+        }
+
+        /* --- REVIEWS AND RATINGS --- */
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .review-header h2 { /* Heading inside card */
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            transition: color 0.3s;
+        }
+        .avg-rating {
+            font-size: 1.2rem; /* Adjusted size */
+            font-weight: 700; /* Adjusted weight */
+            color: var(--text-dark); /* Use text color */
+            display: flex;
+            align-items: center;
+            transition: color 0.3s;
+        }
+        .stars-container { /* Container for stars */
+            display: flex;
+            align-items: center;
+            margin-right: 10px;
+        }
+        .star-icon {
+            color: var(--star-color);
+            fill: var(--star-color);
+            width: 18px; /* Slightly smaller stars */
+            height: 18px;
+            margin-right: 3px; /* Tighter spacing */
+        }
+         .star-icon.empty { /* Style for empty stars */
+              color: var(--border-light);
+              fill: var(--border-light);
+         }
+
+
+        .review-card {
+            border: 1px solid var(--border-light);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background-color: var(--primary-bg); /* Use primary bg for slight contrast */
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+        .review-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .reviewer-info {
+            font-weight: 600;
+            color: var(--text-dark); /* Use main text color */
+            transition: color 0.3s;
+        }
+        .review-date {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            transition: color 0.3s;
+        }
+        .review-text {
+            font-size: 0.95rem;
+            color: var(--text-dark); /* Use main text color */
+            transition: color 0.3s;
+        }
+
+        /* --- Theme Toggle Button Style --- */
+        #theme-toggle {
+            background-color: var(--toggle-btn-bg);
+            color: var(--toggle-btn-text); /* Use text color var */
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        #theme-toggle:hover {
+            background-color: var(--primary-accent);
+            color: white;
+        }
+        #theme-toggle i {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* --- MEDIA QUERIES --- */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                padding: 10px;
+                margin-top: 20px; /* Adjust margin */
+            }
+            .sidebar {
+                width: 100%; /* Full width */
+            }
+            header > div { padding: 0 10px; } /* Adjust header padding */
+        }
+
+        .review-card {
+            background-color: var(--bg-primary, #ffffff); /* Uses your theme variable */
+            border: 1px solid var(--btn-secondary-border, #D1C4E9);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+        }
+
+        .review-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap; /* For mobile */
+            gap: 0.5rem;
+        }
+
+        .reviewer-info {
+            font-weight: 600;
+            color: var(--text-header, #33334d);
+        }
+
+        .review-date {
+            font-size: 0.875rem;
+            color: var(--text-subtitle, #5d6d84);
+        }
+
+        .review-text {
+            color: var(--text-primary, #374151);
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        /* --- New Styles for the Button --- */
+        .add-review-container {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--btn-secondary-border, #D1C4E9);
+        }
+
+        .btn-add-review {
+            /* Styles borrowed from your .btn-primary */
+            background: linear-gradient(90deg, #A57EFE, #C199F9);
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(165, 126, 254, 0.4);
+            border: none;
+            
+            /* Styles borrowed from your .btn */
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-add-review:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(165, 126, 254, 0.6);
+        }
+
+        .btn-add-review i {
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<!-- REMOVED onload="" -->
+<body>
+
+    <!-- Header uses CSS variables now -->
+    <header>
+        <div>
+            <h1><a href="{% url "homepage" %}">UrbanSkillX</a></h1>
+            <nav>
+                <a href="{% url "homepage" %}">Home</a>
+                <a href="{% url "makeportfolio" %}">Edit</a>
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" style="background:none; border:none; color:inherit; cursor:pointer;">
+                    LOGOUT
+                </button>
+                </form>
+                <!-- Dark Mode Toggle Button -->
+                <button id="theme-toggle" title="Toggle dark mode">
+                    <i></i> <!-- Icon placeholder -->
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <div class="container">
+
+        <!-- LEFT COLUMN: Profile, Credits, Badges -->
+        <aside class="sidebar">
+
+            <!-- A. PROFILE & BIO -->
+            <div class="card">
+                <div class="profile-header">
+                    <img src="https://placehold.co/120x120/A78BFA/ffffff?text=TS" alt="Profile Picture" class="profile-img">
+                    <h2 class="profile-name">Tanishqa Sharma</h2>
+                    <p class="profile-location">Frontend Developer | Available Locally</p>
+                </div>
+
+                <div class="bio-section" style="margin-bottom: 20px;">
+                    <h3>About & Bio</h3>
+                    <p class="bio-text">
+                        Full-Stack developer focused on building high-performance UIs using React. Expertise in responsive design, CSS architecture, and delivering polished user experiences. Enthusiastic about local community projects!
+                    </p>
+                </div>
+
+                <div class="skills-section">
+                    <h3>Core Skills</h3>
+                    <ul class="skills-list">
+                        <li class="skill-tag">ReactJS</li>
+                        <li class="skill-tag">CSS/Sass</li>
+                        <li class="skill-tag">UI/UX</li>
+                        <li class="skill-tag">Python (Flask)</li>
+                        <li class="skill-tag">Git</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- B. CREDITS/INCENTIVE SYSTEM -->
+            <div class="card">
+                <div class="credits-section">
+                    <h3 class="credits-title">Current Skill Credits</h3>
+                    <p class="credits-count">350</p>
+                    <p style="font-size: 0.8rem; color: #10B981; font-weight: 600;">+80 earned this week</p>
+                    <button class="btn-redeem" onclick="handleRedeemClick()">
+                        Redeem / Donate Credits
+                    </button>
+                </div>
+            </div>
+
+            <!-- C. BADGES & ACCOLADES -->
+            <div class="card badges-section">
+                <h3>Accolades Earned</h3>
+                <div class="badges-list">
+                    <div class="badge-item">
+                        <div class="badge-icon"><i data-lucide="code" style="width: 20px;"></i></div>
+                        Code Contributor
+                    </div>
+                    <div class="badge-item">
+                        <div class="badge-icon mint"><i data-lucide="star" style="width: 20px;"></i></div>
+                        Top Rated (3x)
+                    </div>
+                    <div class="badge-item">
+                        <div class="badge-icon pink"><i data-lucide="users" style="width: 20px;"></i></div>
+                        Community Builder
+                    </div>
+                </div>
+            </div>
+
+        </aside>
+
+        <!-- RIGHT COLUMN: Reviews and Ratings -->
+        <section class="main-content">
+
+            <!-- A. SUMMARY RATING -->
+            <div class="card review-header">
+                <h2>Reviews & Ratings</h2>
+                <div class="avg-rating">
+                     <div class="stars-container">
+                        <i data-lucide="star" class="star-icon"></i>
+                        <i data-lucide="star" class="star-icon"></i>
+                        <i data-lucide="star" class="star-icon"></i>
+                        <i data-lucide="star" class="star-icon"></i>
+                        <i data-lucide="star" class="star-icon empty"></i>
+                     </div>
+                    <span>4.2 / 5.0</span>
+                </div>
+            </div>
+
+            <!-- B. INDIVIDUAL REVIEWS -->
+            <div style="margin-top: 20px;"> <!-- Container for reviews -->
+                <div class="reviews-list">
+                <h3>User Reviews</h3>
+                {% for review in reputations %}
+                    <div class="review-card">
+                        <strong>{{ review.user.username }}</strong> — 
+                        <span>{{ review.get_rating_display }}</span>
+                        <p>{{ review.testimonial }}</p>
+                        <small>Skills: {{ review.skills }}</small>
+                    </div>
+                
+                {% endfor %}
+            </div>
+
+            </div>
+
+            <div class="add-review-container">
+            <a href="{% url 'micros:reputation_url' %}" class="btn-add-review">
+                <i class="fas fa-plus"></i> Add Your Review
+            </a>
+            </div>
+
+        </section>
+
+    </div>
+
+    <!-- SCRIPT UPDATED -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            /* --- DARK MODE SCRIPT (ALWAYS MOON)--- */
+            const htmlEl = document.documentElement;
+            const themeToggleBtn = document.getElementById('theme-toggle');
+
+            if (themeToggleBtn) {
+                const iconEl = themeToggleBtn.querySelector('i');
+
+                // 1. Check localStorage on page load and apply class
+                const savedTheme = localStorage.getItem('theme');
+                const isDark = savedTheme === 'dark';
+
+                if (isDark) {
+                    htmlEl.classList.add('dark');
+                } else {
+                    htmlEl.classList.remove('dark');
+                }
+
+                // 2. Set icon attribute *always* to 'moon'
+                if (iconEl) {
+                    iconEl.setAttribute('data-lucide', 'moon');
+                }
+
+                // 3. Add click listener
+                themeToggleBtn.addEventListener('click', () => {
+                    htmlEl.classList.toggle('dark');
+                    const isDarkNow = htmlEl.classList.contains('dark');
+                    localStorage.setItem('theme', isDarkNow ? 'dark' : 'light');
+                    // No need to change icon attribute or call createIcons here
+                });
+            }
+            /* --- END DARK MODE SCRIPT --- */
+
+            // Function to handle redeem click (replace alert with console log or actual logic)
+            window.handleRedeemClick = function() {
+                console.log("Redeem/Donate button clicked. Redirecting or showing modal...");
+                // Example redirect:
+                // window.location.href = 'incentives_page.html';
+            }
+
+
+            // 4. Final lucide call after everything else is set up
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

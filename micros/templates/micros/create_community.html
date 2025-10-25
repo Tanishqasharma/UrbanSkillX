@@ -1,0 +1,323 @@
+{% load static %}
+<!DOCTYPE html>
+<!-- Add class for transitions -->
+<html lang="en" class="transition-colors duration-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create - UrbanSkillX</title>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* Re-using your website's color theme */
+        :root {
+            /* Light Mode */
+            --primary-bg: #F0F4F8;
+            --primary-accent: #A78BFA; /* Soft Lavender */
+            --text-dark: #374151;
+            --text-light-gray: #555;
+            --border-gray: #D1D5DB;
+            --card-bg: #ffffff;
+            --header-bg: #ffffff;
+            --input-bg: #ffffff;
+            --toggle-btn-bg: #E5E7EB;
+            --toggle-btn-text: #374151;
+        }
+
+        /* Dark Mode Variables */
+        html.dark {
+            --primary-bg: #111827;
+            --text-dark: #D1D5DB;
+            --text-light-gray: #9CA3AF;
+            --border-gray: #374151;
+            --card-bg: #1F2937;
+            --header-bg: #1F2937;
+            --input-bg: #374151;
+            --toggle-btn-bg: #374151;
+            --toggle-btn-text: #D1D5DB;
+        }
+
+        /* Basic Page Reset */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; /* Consider using Inter like other pages */
+            background-color: var(--primary-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--header-bg);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--border-gray);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: background-color 0.3s, border-color 0.3s;
+            position: sticky; /* Keep header sticky */
+            top: 0;
+            z-index: 10;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #7C3AED; /* Use Brand color */
+            transition: color 0.3s; /* Heading color might not change */
+        }
+         .header-content h1 a { /* Style link if used inside h1 */
+             text-decoration: none;
+             color: inherit;
+         }
+
+        .header-nav { /* Use flex for nav items + toggle */
+            display: flex;
+            align-items: center;
+            gap: 1.5rem; /* Gap between links and button */
+        }
+        .header-nav a {
+            text-decoration: none;
+            color: var(--text-light-gray);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .header-nav a:hover {
+            color: var(--primary-accent);
+        }
+
+        /* Theme Toggle Button Style */
+        #theme-toggle {
+            background-color: var(--toggle-btn-bg);
+            color: var(--toggle-btn-text);
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        #theme-toggle:hover {
+            background-color: var(--primary-accent);
+            color: white;
+        }
+        #theme-toggle i {
+            width: 20px;
+            height: 20px;
+        }
+
+
+        /* Main Page Title */
+        .page-title {
+            text-align: center;
+            font-size: 2.5rem;
+            color: var(--text-dark); /* Use var */
+            margin: 2rem 0;
+            transition: color 0.3s;
+        }
+
+        /* Layout for the two forms */
+        .page-layout {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 2rem;
+            padding: 1rem 2rem 3rem;
+            flex-wrap: wrap; /* Forms will stack on small screens */
+        }
+
+        /* Styling for each form card */
+        .form-card {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border-gray);
+            transition: background-color 0.3s, border-color 0.3s;
+
+            /* Sizing */
+            flex-basis: 450px;
+            flex-grow: 1;
+            max-width: 500px;
+        }
+
+        .form-card h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-accent);
+            margin-top: 0;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--primary-bg); /* Use bg for subtle line */
+            padding-bottom: 0.75rem;
+            transition: border-color 0.3s;
+        }
+
+        /* Styling for form groups (label + input) */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-light-gray); /* Use var */
+            font-size: 0.9rem;
+            transition: color 0.3s;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            font-size: 1rem;
+            border: 1px solid var(--border-gray);
+            border-radius: 6px;
+            background-color: var(--input-bg); /* Use var */
+            color: var(--text-dark); /* Use var */
+            transition: border-color 0.3s, box-shadow 0.3s, background-color 0.3s, color 0.3s;
+            box-sizing: border-box; /* Ensure padding doesn't break layout */
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.25);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Submit Button */
+        button[type="submit"] {
+            width: 100%;
+            padding: 0.85rem;
+            border: none;
+            border-radius: 6px;
+            background-color: var(--primary-accent);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #9370db; /* Darker lavender */
+            transform: translateY(-2px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+             header { padding: 1rem; }
+             .header-content h1 { font-size: 1.5rem; }
+             .header-nav { gap: 1rem; }
+             .page-title { font-size: 2rem; margin: 1.5rem 0; }
+             .page-layout { padding: 1rem; gap: 1.5rem;}
+             .form-card { flex-basis: 100%; max-width: none; padding: 1.5rem;}
+        }
+
+    </style>
+</head>
+<!-- Removed onload -->
+<body>
+
+    <header>
+        <div class="header-content">
+            <h1><a href="{% url "homepage" %}">UrbanSkillX</a></h1>
+            <nav class="header-nav">
+                <a href="{% url "homepage" %}">Home</a>
+                <a href="{% url "profile" %}">My Dashboard</a>
+                <!-- Dark Mode Toggle Button Added -->
+                <button id="theme-toggle" title="Toggle dark mode">
+                    <i></i> <!-- Icon placeholder -->
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <h1 class="page-title">Create & Organize</h1>
+
+    <div class="page-layout">
+
+       <form method="POST" action="{% url 'micros:create-community_url' %}">
+            {% csrf_token %}
+            {{ communityform.as_p }}
+            <button type="submit" name="community-submit">Create Community</button>
+        </form>
+
+        <form method="POST" action="{% url 'micros:create-community_url' %}">
+            {% csrf_token %}
+            {{ projectform.as_p }}
+            <button type="submit" name="project-submit">Create Project</button>
+        </form>
+
+    </div>
+
+    <!-- SCRIPT UPDATED -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            /* --- DARK MODE SCRIPT (ALWAYS MOON)--- */
+            const htmlEl = document.documentElement;
+            const themeToggleBtn = document.getElementById('theme-toggle');
+
+            if (themeToggleBtn) {
+                const iconEl = themeToggleBtn.querySelector('i');
+
+                // 1. Check localStorage on page load and apply class
+                const savedTheme = localStorage.getItem('theme');
+                const isDark = savedTheme === 'dark';
+
+                if (isDark) {
+                    htmlEl.classList.add('dark');
+                } else {
+                    htmlEl.classList.remove('dark');
+                }
+
+                // 2. Set icon attribute *always* to 'moon'
+                if (iconEl) {
+                    iconEl.setAttribute('data-lucide', 'moon');
+                }
+
+                // 3. Add click listener
+                themeToggleBtn.addEventListener('click', () => {
+                    htmlEl.classList.toggle('dark');
+                    const isDarkNow = htmlEl.classList.contains('dark');
+                    localStorage.setItem('theme', isDarkNow ? 'dark' : 'light');
+                    // No need to change icon attribute or call createIcons here
+                });
+            }
+            /* --- END DARK MODE SCRIPT --- */
+
+            // 4. Final lucide call after everything else is set up
+            lucide.createIcons();
+        });
+    </script>
+
+</body>
+</html>

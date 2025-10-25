@@ -1,0 +1,471 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UrbanSkillX | Hyperlocal Talent Exchange</title>
+    <!-- Load Font Awesome for Icons (Required for social icons AND theme toggle) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Base Styling with CSS Variables for Theming */
+        :root {
+            --bg-primary: #ffffff;
+            --bg-secondary: #F3ECFF; /* Was --color-primary-light */
+            --bg-hover: #e0e0f0;
+            --text-primary: #374151; /* Was --color-text-dark */
+            --text-header: #33334d;
+            --text-link: #8E7ACF; /* Was --color-primary-dark */
+            --text-subtitle: #5d6d84;
+            --color-accent: #A57EFE;
+            --btn-signup-bg: #ffffff;
+            --btn-signup-text: #8E7ACF;
+            --btn-signup-border: #8E7ACF;
+            --btn-signup-hover-bg: #8E7ACF;
+            --btn-signup-hover-text: #ffffff;
+            --btn-secondary-bg: #F3ECFF;
+            --btn-secondary-text: #374151;
+            --btn-secondary-border: #D1C4E9;
+            --btn-secondary-hover-bg: #E0E0F0;
+            --font-family: 'Inter', sans-serif;
+        }
+
+        /* --- DARK MODE THEME --- */
+        body.dark-mode {
+            --bg-primary: #22223b; /* Dark Blue/Purple */
+            --bg-secondary: #33334d; /* Darker, from old header text */
+            --bg-hover: #4a4a6a;
+            --text-primary: #dcdcdc; /* Light gray */
+            --text-header: #ffffff;
+            --text-link: #C199F9; /* Brighter purple */
+            --text-subtitle: #a0a0b8;
+            --color-accent: #A57EFE;
+            --btn-signup-bg: #A57EFE;
+            --btn-signup-text: #ffffff;
+            --btn-signup-border: #A57EFE;
+            --btn-signup-hover-bg: #ffffff;
+            --btn-signup-hover-text: #A57EFE;
+            --btn-secondary-bg: #33334d;
+            --btn-secondary-text: #dcdcdc;
+            --btn-secondary-border: #8E7ACF;
+            --btn-secondary-hover-bg: #4a4a6a;
+        }
+        /* --- END OF THEME --- */
+
+
+        body {
+            font-family: var(--font-family);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-primary);
+            line-height: 1.6;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        /* -------------------------------------- */
+        /* Header and Navigation */
+        /* -------------------------------------- */
+        .header {
+            background-color: var(--bg-secondary);
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            transition: background-color 0.3s;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-header);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .nav-links {
+            display: none; /* Hidden by default on mobile */
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 0.5rem 0;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover {
+            color: var(--text-link);
+        }
+
+        /* --- NEW: Theme Toggle Button --- */
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .theme-toggle:hover {
+            background-color: var(--bg-hover);
+        }
+        /* --- End New --- */
+
+        .btn-signup {
+            background-color: var(--btn-signup-bg);
+            color: var(--btn-signup-text);
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--btn-signup-border);
+            border-radius: 9999px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .btn-signup:hover {
+            background-color: var(--btn-signup-hover-bg);
+            color: var(--btn-signup-hover-text);
+        }
+
+        /* Responsive Navigation (Desktop/Tablet) */
+        @media (min-width: 768px) {
+            .nav-links {
+                display: flex;
+            }
+        }
+
+        /* -------------------------------------- */
+        /* Hero Section */
+        /* -------------------------------------- */
+        .hero {
+            background-color: var(--bg-secondary);
+            padding: 4rem 0 6rem 0;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .hero-pre-title {
+            color: var(--text-link);
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            transition: color 0.3s;
+        }
+
+        .hero-title {
+            color: var(--text-header);
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            transition: color 0.3s;
+        }
+
+        .hero-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-subtitle);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 2.5rem;
+            transition: color 0.3s;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s, color 0.3s;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #A57EFE, #C199F9);
+            color: var(--color-white);
+            box-shadow: 0 4px 10px rgba(165, 126, 254, 0.4);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(165, 126, 254, 0.6);
+        }
+
+        .btn-secondary {
+            background-color: var(--btn-secondary-bg);
+            color: var(--btn-secondary-text);
+            border: 2px solid var(--btn-secondary-border);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--btn-secondary-hover-bg);
+            transform: translateY(-1px);
+        }
+
+        .btn i {
+            margin-right: 0.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .hero-title {
+                font-size: 4.5rem;
+                margin-bottom: 2rem;
+            }
+            .hero-subtitle {
+                font-size: 1.25rem;
+            }
+            .hero-actions {
+                flex-direction: row;
+                gap: 1.5rem;
+            }
+            .btn {
+                max-width: 250px;
+            }
+        }
+
+        /* -------------------------------------- */
+        /* Mission Section */
+        /* -------------------------------------- */
+        .mission-section {
+            padding: 5rem 0;
+            background-color: var(--bg-primary);
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .mission-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-link);
+            margin-bottom: 1.5rem;
+            transition: color 0.3s;
+        }
+
+        .mission-text {
+            font-size: 1rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+            opacity: 0.9;
+            transition: color 0.3s;
+        }
+
+        .link-story {
+            color: var(--text-link);
+            font-weight: 600;
+            text-decoration: none;
+            transition: color 0.3s;
+            display: inline-block;
+            margin-bottom: 3rem;
+        }
+
+        .link-story:hover {
+            color: var(--color-accent);
+        }
+
+        .link-story i {
+            margin-left: 0.5rem;
+            transition: transform 0.3s;
+        }
+
+        .link-story:hover i {
+            transform: translateX(4px);
+        }
+
+        /* -------------------------------------- */
+        /* Footer/Contact Section */
+        /* -------------------------------------- */
+        .footer {
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-link {
+            color: var(--text-link);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s;
+        }
+
+        .contact-link:hover {
+            color: var(--color-accent);
+        }
+
+        .contact-link i {
+            font-size: 1.25rem;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <header class="header">
+        <div class="container navbar">
+            <a href="{% url "homepage" %}" class="logo">UrbanSkillX</a>
+            <nav class="nav-links">
+                <a href="{% url "about" %}" class="nav-link">About Us</a>
+                <a href="{% url "micros:community_url" %}" class="nav-link">Projects</a>
+                <a href="{% url "profile" %}" class="nav-link">Portfolio</a>
+                
+                <!-- NEW: Theme Toggle Button -->
+                <button id="theme-toggle-btn" class="theme-toggle" aria-label="Toggle theme">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                </button>
+                
+                <a href="{% url "login" %}" class="btn-signup">Sign Up / Log In</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <p class="hero-pre-title">Hyperlocal Talent Exchange</p>
+            <h1 class="hero-title">
+                Connect. Share Skills. Build Community.
+            </h1>
+            <p class="hero-subtitle">
+                The streamlined, trustworthy platform to share your unique skills and find verified help right in your neighborhood.
+            </D>
+            <div class="hero-actions">
+                <a href="{% url "micros:booking_url" %}" class="btn btn-primary">
+                    <i class="fas fa-calendar-check"></i>
+                    Book a Session Now
+                </a>
+                <a href="{% url "about" %}" class="btn btn-secondary">
+                    <i class="fas fa-info-circle"></i>
+                    Learn About Us
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mission Section -->
+    <section class="mission-section">
+        <div class="container">
+            <h2 class="mission-title">Our Mission: Empowering Local Exchange</h2>
+            <p class="mission-text">
+                Our Team is dedicated to creating robust, high-performance applications that solve real-world problems. The Urban Skill Exchange platform is our answer to strengthening neighborhood economies by making local talent accessible, trustworthy, and rewarding. We believe every person has a valuable skill to share.
+            </p>
+            <a href="{% url "about" %}" class="link-story">
+                Read Our Full Story
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer/Contact Section -->
+    <footer class="footer">
+        <div class="container contact-links">
+            <a href="mailto:contact@urbanskillx.com" class="contact-link">
+                <i class="fas fa-envelope"></i>
+                contact@urbanskillx.com
+            </a>
+            <a href="#" class="contact-link">
+                <i class="fab fa-github"></i>
+                GitHub
+            </a>
+            <a href="#" class="contact-link">
+                <i class="fab fa-linkedin-in"></i>
+                LinkedIn
+            </a>
+        </div>
+    </footer>
+
+    <!-- NEW: JavaScript for Theme Toggle -->
+    <script>
+        const themeToggleBtn = document.getElementById('theme-toggle-btn');
+        const themeIcon = document.getElementById('theme-icon');
+        const body = document.body;
+
+        // Function to set the theme
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                body.classList.add('dark-mode');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-mode');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Click event for the toggle button
+        themeToggleBtn.addEventListener('click', () => {
+            // Check if 'dark-mode' class is currently on the body
+            const isDarkMode = body.classList.contains('dark-mode');
+            // Toggle the theme
+            setTheme(isDarkMode ? 'light' : 'dark');
+        });
+
+        // Check localStorage on page load to apply saved theme
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get the saved theme, or default to 'light' if nothing is saved
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            setTheme(savedTheme);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en" class="transition-colors duration-300">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tech Zephyr: Booking & Scheduling</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    :root {
+      /* Light Mode */
+      --primary-bg: #F0F4F8;
+      --primary-accent: #A78BFA;
+      --accent-mint: #6EE7B7;
+      --text-dark: #374151;
+      --text-light: #4B5563; /* Added for consistency */
+      --border-light: #E5E7EB;
+      --card-bg: #ffffff; /* Added for consistency */
+      --header-bg: #ffffff; /* Added */
+      --toggle-btn-bg: #F3F4F6; /* Adjusted button bg */
+      --toggle-btn-text: #374151; /* Adjusted button text */
+    }
+
+    html.dark {
+        /* Dark Mode */
+        --primary-bg: #111827;
+        --text-dark: #D1D5DB;
+        --text-light: #9CA3AF;
+        --border-light: #374151;
+        --card-bg: #1f2937;
+        --header-bg: #1f2937;
+        --toggle-btn-bg: #374151;
+        --toggle-btn-text: #D1D5DB;
+    }
+
+    html {
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    body {
+      background-color: var(--primary-bg);
+      font-family: "Inter", sans-serif;
+      color: var(--text-dark);
+      min-height: 100vh;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .time-slot {
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: 1px solid var(--border-light);
+      background-color: var(--card-bg); /* Use card bg for slots */
+      color: var(--text-dark); /* Ensure text color matches */
+      text-align: center; /* Center time text */
+      padding: 0.5rem; /* Equivalent to p-2 */
+      border-radius: 0.5rem; /* Equivalent to rounded-lg */
+    }
+    .time-slot:hover:not(.selected):not(.booked) {
+      background-color: #F3F4F6; /* Light hover */
+      border-color: var(--primary-accent);
+    }
+    html.dark .time-slot:hover:not(.selected):not(.booked) {
+      background-color: #374151; /* Dark hover */
+    }
+
+    .time-slot.selected {
+      background-color: var(--primary-accent);
+      color: white;
+      border-color: var(--primary-accent);
+      font-weight: 600;
+    }
+    .time-slot.booked {
+      background-color: #FEE2E2; /* Light booked */
+      color: #EF4444;
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    html.dark .time-slot.booked {
+      background-color: #4b1d1d; /* Dark booked */
+      color: #fca5a5;
+    }
+
+
+    .btn-confirm {
+      background-color: var(--primary-accent);
+      transition: background-color 0.2s, transform 0.2s;
+    }
+    .btn-confirm:hover:not(:disabled) {
+      background-color: #8B5CF6;
+      transform: translateY(-1px);
+    }
+
+    /* --- Theme Specific Styles --- */
+    .bg-white { /* Use var for card/header bg */
+        background-color: var(--card-bg) !important;
+        color: var(--text-dark);
+        transition: background-color 0.3s, color 0.3s;
+    }
+
+    /* Adjust specific text colors */
+    .text-gray-600,
+    .text-gray-700,
+    .text-gray-500 {
+        color: var(--text-light) !important;
+        transition: color 0.3s;
+    }
+    .text-gray-900 { /* For calendar days, etc */
+        color: var(--text-dark) !important;
+        transition: color 0.3s;
+    }
+
+
+    .border-violet-500 {
+      border-color: var(--primary-accent) !important;
+    }
+    .shadow-xl {
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06); /* Standard Tailwind shadow */
+    }
+    html.dark .shadow-xl {
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); /* Darker shadow if needed */
+    }
+
+    header {
+      background-color: var(--header-bg); /* Use header var */
+      color: var(--text-dark); /* Use text var */
+    }
+
+    /* Conflict message adjustments */
+    .bg-green-100 { background-color: #D1FAE5; }
+    .text-green-700 { color: #047857; }
+    html.dark .bg-green-100 { background-color: #064E3B; }
+    html.dark .text-green-700 { color: #6EE7B7; }
+
+    .bg-red-100 { background-color: #FEE2E2; }
+    .text-red-700 { color: #B91C1C; }
+    html.dark .bg-red-100 { background-color: #7F1D1D; }
+    html.dark .text-red-700 { color: #FCA5A5; }
+
+    /* Theme Toggle Button Style */
+    #theme-toggle {
+        background-color: var(--toggle-btn-bg);
+        color: var(--toggle-btn-text);
+        padding: 8px; /* Consistent padding */
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    #theme-toggle:hover {
+        background-color: var(--primary-accent);
+        color: white;
+    }
+    #theme-toggle i {
+        width: 20px; /* Consistent size */
+        height: 20px;
+    }
+
+    /* Ensure borders use CSS vars */
+    .border-b {
+        border-bottom-width: 1px;
+        border-color: var(--border-light);
+    }
+    .border-t-4 {
+        border-top-width: 4px;
+    }
+    .card {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        
+        /* Style for the date picker (the 'form-input' class from forms.py) */
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-light);
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            box-shadow: 0 0 0 2px rgba(167, 139, 250, 0.3);
+        }
+        
+        /* Styling for the Radio Buttons (the 'form-radio-list' class from forms.py) */
+        .form-radio-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border: 1px solid var(--border-light);
+            border-radius: 0.375rem;
+        }
+        .form-radio-list li {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .form-radio-list li:last-child {
+            border-bottom: none;
+        }
+        .form-radio-list label {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .form-radio-list input[type="radio"] {
+            margin-right: 0.75rem;
+            accent-color: var(--primary-accent);
+            width: 1rem;
+            height: 1rem;
+        }
+        
+        /* Style for the checkbox */
+        .form-group-checkbox {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+        }
+        /* The 'form-checkbox' class from forms.py */
+        .form-checkbox {
+            height: 1rem;
+            width: 1rem;
+            border: 1px solid var(--border-light);
+            border-radius: 0.25rem;
+            margin-right: 0.5rem;
+            accent-color: var(--primary-accent);
+        }
+        
+        /* Style for the submit button */
+        .btn-confirm {
+            background-color: var(--primary-accent);
+            color: white;
+            font-weight: 700;
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            transition: background-color 0.2s, transform 0.2s;
+        }
+        .btn-confirm:hover {
+            background-color: #8B5CF6;
+            transform: translateY(-1px);
+        }
+  </style>
+</head>
+<!-- REMOVED onload="" from body -->
+<body>
+
+  <!-- Header -->
+  <header class="bg-white shadow-md flex justify-between items-center px-6 py-4">
+    <h1 class="text-2xl font-extrabold text-violet-600 tracking-wide">
+      <!-- Ensure link uses proper Django URL tag if needed, otherwise use # or actual URL -->
+      <a href="{% url "homepage" %}">UrbanSkillX</a>
+    </h1>
+    <div class="flex items-center space-x-4">
+      <a href="{% url "homepage" %}" class="text-gray-600 hover:text-violet-600 transition font-medium">Back to Home</a>
+
+      <!-- Dark Mode Toggle Button -->
+      <!-- Removed inline bg/hover classes, uses CSS vars now -->
+      <button id="theme-toggle" title="Toggle Dark Mode">
+        <i></i> <!-- Icon placeholder -->
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Booking Section -->
+  <main class="max-w-7xl mx-auto py-12 px-6">
+    <form method="POST" action="{% url 'micros:booking_url' %}" class="card">
+            
+            {% csrf_token %}
+
+            <!-- Renders the 'Booking Date' label and the date-picker input -->
+            <div class="form-group">
+                {{ bookingform.booking_date.label_tag }}
+                {{ bookingform.booking_date }}
+            </div>
+        
+            <!-- 
+              Renders the 'Booking Slot' label and the list of radio buttons.
+              Django will create an <ul> here because we styled 'form-radio-list'.
+            -->
+            <div class="form-group">
+                {{ bookingform.booking_time.label_tag }}
+                {{ bookingform.booking_time }}
+            </div>
+        
+            <!-- Renders the 'Want a reminder' label and the checkbox -->
+            <div class="form-group-checkbox">
+                {{ bookingform.reminder }}
+                <label for="id_reminder_checkbox">{{ bookingform.reminder.label }}</label>
+            </div>
+        
+            <!-- The SUBMIT Button -->
+            <button type="submit" class="btn-confirm">
+                Confirm Booking
+            </button>
+        </form>
+  </main>
+
+  <!-- SCRIPT UPDATED TO FIX FLASHING ICON & ALWAYS SHOW MOON -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        /* ======== DARK MODE TOGGLE (MODIFIED: ALWAYS MOON) ======== */
+        const htmlEl = document.documentElement;
+        const toggleBtn = document.getElementById("theme-toggle");
+
+        if (toggleBtn) { // Check if the button exists
+            const iconEl = toggleBtn.querySelector("i");
+
+            // 1. Check localStorage to apply theme (dark/light class)
+            const savedTheme = localStorage.getItem("theme");
+            const isDark = savedTheme === "dark";
+
+            if (isDark) {
+                htmlEl.classList.add("dark");
+            } else {
+                htmlEl.classList.remove("dark");
+            }
+
+            // 2. Set icon attribute *always* to 'moon' before rendering
+            if (iconEl) {
+                iconEl.setAttribute("data-lucide", "moon"); // Always set moon
+            }
+
+            // 3. Add Click Listener (still toggles theme, but icon stays moon)
+            toggleBtn.addEventListener("click", () => {
+                htmlEl.classList.toggle("dark");
+                const isDarkNow = htmlEl.classList.contains("dark");
+                localStorage.setItem("theme", isDarkNow ? "dark" : "light");
+
+                // If other icons on the page *might* change during theme toggle,
+                // you might need to call lucide.createIcons() here.
+                // If only the theme colors change, you can remove the call below.
+                // lucide.createIcons();
+            });
+        }
+        /* ======== END DARK MODE ======== */
+
+
+        /* ======== EXISTING BOOKING LOGIC ======== */
+        const CALENDAR_DATA = {
+          "2025-10-24": ["09:00", "10:00", "11:00", "14:00", "15:00", "16:00"],
+          "2025-10-25": ["09:00", "10:00", "11:00", "12:00", "13:00"],
+          "2025-10-27": ["14:00", "15:00", "16:00", "17:00"],
+        };
+        const BOOKED_SLOTS = {
+          "2025-10-24 10:00": true,
+          "2025-10-27 16:00": true,
+        };
+
+        let currentDate = new Date();
+        let selectedDate = null;
+        let selectedTime = null;
+
+        const calendarDaysEl = document.getElementById("calendar-days");
+        const timeSlotsEl = document.getElementById("time-slots");
+        const currentMonthEl = document.getElementById("current-month");
+        const confirmBtn = document.getElementById("confirm-btn");
+        const conflictMessageEl = document.getElementById("conflict-message");
+
+        // Make functions globally accessible ONLY if using inline onclick=""
+        window.renderCalendar = function() {
+          if (!currentMonthEl || !calendarDaysEl) return;
+          const year = currentDate.getFullYear();
+          const month = currentDate.getMonth();
+          currentMonthEl.textContent = currentDate.toLocaleString("default", { month: "long", year: "numeric" });
+
+          const firstDay = new Date(year, month, 1).getDay();
+          const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+          calendarDaysEl.innerHTML = "";
+          // Add empty divs for days before the 1st
+          for (let i = 0; i < firstDay; i++) calendarDaysEl.insertAdjacentHTML("beforeend", "<div></div>");
+
+          // Add day divs
+          for (let day = 1; day <= daysInMonth; day++) {
+            const dateKey = `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+            const isAvailable = CALENDAR_DATA[dateKey];
+            const today = new Date(); // Get today's date fresh
+            today.setHours(0,0,0,0); // Zero out time for comparison
+            const isPast = new Date(year, month, day) < today;
+            const isDisabled = !isAvailable || isPast;
+
+            const dayClass = isDisabled
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-gray-900 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700"; // Use text-gray-900 which maps to text-dark
+            const cell = `<div class="text-center p-2 rounded-lg text-sm ${dayClass}" data-date="${dateKey}" ${isDisabled ? "" : "onclick='selectDate(this)'"}>${day}</div>`;
+            calendarDaysEl.insertAdjacentHTML("beforeend", cell);
+          }
+
+          // Re-apply selected style if a date in the current view is selected
+          if (selectedDate && selectedDate.startsWith(`${year}-${String(month + 1).padStart(2, "0")}`)) {
+            const selectedEl = calendarDaysEl.querySelector(`[data-date='${selectedDate}']`);
+            if (selectedEl) selectedEl.classList.add("bg-violet-100", "dark:bg-violet-900", "selected");
+          }
+          renderTimeSlots();
+        }
+
+        window.selectDate = function(el) {
+          calendarDaysEl.querySelectorAll(".selected").forEach(e => e.classList.remove("bg-violet-100", "dark:bg-violet-900", "selected"));
+          el.classList.add("bg-violet-100", "dark:bg-violet-900", "selected");
+          selectedDate = el.dataset.date;
+          document.getElementById("summary-date").textContent = new Date(selectedDate + 'T00:00:00').toLocaleDateString(); // Ensure correct date parsing
+          selectedTime = null; // Reset time on new date selection
+          document.getElementById("summary-time").textContent = "Not Selected";
+          checkCompleteness();
+          renderTimeSlots();
+        }
+
+        window.renderTimeSlots = function() {
+            if (!timeSlotsEl) return;
+            timeSlotsEl.innerHTML = "";
+            if (!selectedDate || !CALENDAR_DATA[selectedDate]) {
+                timeSlotsEl.innerHTML = '<p class="text-gray-500 col-span-full">Select an available date to view times.</p>';
+                return;
+            }
+            CALENDAR_DATA[selectedDate].forEach(time => {
+                const dateTimeKey = `${selectedDate} ${time}`;
+                const isBooked = BOOKED_SLOTS[dateTimeKey];
+                const slotClass = isBooked
+                    ? "booked"
+                    : "time-slot"; // Base class handles hover and colors now
+                const html = `<div class="${slotClass}" data-time="${time}" ${isBooked ? "" : "onclick='selectTime(this)'"}>${time}</div>`;
+                timeSlotsEl.insertAdjacentHTML("beforeend", html);
+            });
+             // Re-apply selected style if a time was already selected for this date
+             if (selectedTime) {
+                const selectedTimeEl = timeSlotsEl.querySelector(`[data-time='${selectedTime}']`);
+                if (selectedTimeEl && !selectedTimeEl.classList.contains('booked')) {
+                    selectedTimeEl.classList.add('selected');
+                } else {
+                    // If the previously selected time is now booked or not available, reset it
+                    selectedTime = null;
+                     document.getElementById("summary-time").textContent = "Not Selected";
+                     checkCompleteness();
+                }
+             }
+        }
+
+
+        window.selectTime = function(el) {
+          if (!timeSlotsEl) return;
+          timeSlotsEl.querySelectorAll(".selected").forEach(e => e.classList.remove("selected"));
+          el.classList.add("selected");
+          selectedTime = el.dataset.time;
+          document.getElementById("summary-time").textContent = selectedTime;
+          checkConflict(); // Check conflict immediately
+          checkCompleteness();
+        }
+
+        window.checkConflict = function() {
+            if (!conflictMessageEl || !confirmBtn) return;
+            const conflict = selectedDate === "2025-10-24" && selectedTime === "14:00"; // Mock conflict
+
+            if (conflict) {
+                conflictMessageEl.className = "p-4 rounded-lg mb-4 text-sm font-medium bg-red-100 text-red-700";
+                conflictMessageEl.innerHTML = '<i data-lucide="alert-triangle" class="w-4 h-4 inline mr-2"></i>Conflict: Provider unavailable at this time.';
+                confirmBtn.disabled = true; // Disable button on conflict
+            } else {
+                 conflictMessageEl.className = "p-4 rounded-lg mb-4 text-sm font-medium bg-green-100 text-green-700";
+                conflictMessageEl.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4 inline mr-2"></i>No conflicts detected. Ready to confirm.';
+                // Enable button only if date AND time are selected and no conflict
+                confirmBtn.disabled = !(selectedDate && selectedTime);
+            }
+            // Only call createIcons if the icon inside the message actually changed
+            lucide.createIcons();
+        }
+
+
+        window.changeMonth = function(step) {
+          currentDate.setMonth(currentDate.getMonth() + step);
+          selectedDate = null; // Reset selection when changing month
+          selectedTime = null;
+          document.getElementById("summary-date").textContent = "Not Selected";
+          document.getElementById("summary-time").textContent = "Not Selected";
+          if(conflictMessageEl){ // Reset conflict message visually
+              conflictMessageEl.className = "p-4 rounded-lg mb-4 text-sm font-medium bg-green-100 text-green-700";
+              conflictMessageEl.innerHTML = '<i data-lucide="check-circle" class="w-4 h-4 inline mr-2"></i>No conflicts detected. Ready to confirm.';
+              lucide.createIcons(); // Need to re-render the check icon
+          }
+          renderCalendar();
+          checkCompleteness(); // This will disable the button
+        }
+
+        window.checkCompleteness = function() {
+            if (!confirmBtn || !conflictMessageEl) return;
+            const noConflict = conflictMessageEl.className.includes('bg-green-100');
+            if (selectedDate && selectedTime && noConflict) {
+                confirmBtn.disabled = false;
+            } else {
+                confirmBtn.disabled = true;
+            }
+        }
+
+
+        // Initial setup calls
+        renderCalendar();
+        checkCompleteness(); // Initial check to ensure button starts disabled
+
+        // 4. Final lucide call after everything else is set up
+        lucide.createIcons();
+
+    });
+  </script>
+</body>
+</html>
+
