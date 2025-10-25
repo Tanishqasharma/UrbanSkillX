@@ -506,14 +506,15 @@
         <!-- Projects Grid -->
         <div class="projects-grid">
 
+            {% for project in projects %}
             <!-- Project Card 1: Coding -->
             <div class="project-card">
                 <div class="card-header-flex">
-                    <h4>Local Community Website</h4>
+                    <h4>{{ project.name }}</h4>
                     <span class="tag-location">2 km radius</span>
                 </div>
                 <p>
-                    Seeking a developer to build a basic local events and news website for the neighborhood association. React/Tailwind preferred.
+                    {{ project.description }}
                 </p>
                 <div class="tags-flex">
                     <span class="tag-skill">#ReactJS</span>
@@ -525,63 +526,7 @@
                     <button class="btn-join">Join Project</button>
                 </div>
             </div>
-
-            <!-- Project Card 2: Physical/Craft -->
-            <div class="project-card border-green">
-                <div class="card-header-flex">
-                    <h4>Community Garden Revitalization</h4>
-                    <span class="tag-location">1 km radius</span>
-                </div>
-                <p>
-                    Looking for volunteers skilled in carpentry, landscaping, and irrigation systems to rebuild planter boxes and install new infrastructure.
-                </p>
-                <div class="tags-flex">
-                    <span class="tag-skill">#Carpentry</span>
-                    <span class="tag-skill">#Landscaping</span>
-                </div>
-                <div class="card-footer-flex">
-                    <div>Team Size: 8/10</div>
-                    <button class="btn-join">Join Project</button>
-                </div>
-            </div>
-
-            <!-- Project Card 3: Tutoring/Language -->
-            <div class="project-card border-yellow">
-                <div class="card-header-flex">
-                    <h4>ESL Workshop Organizing</h4>
-                    <span class="tag-location">5 km radius</span>
-                </div>
-                <p>
-                    Seeking bilingual individuals proficient in Spanish to help organize and run weekly English as a Second Language (ESL) workshops for new residents.
-                </p>
-                <div class="tags-flex">
-                    <span class="tag-skill">#Spanish</span>
-                    <span class="tag-skill">#EventMgmt</span>
-                </div>
-                <div class="card-footer-flex">
-                    <div>Team Size: 2/4</div>
-                    <button class="btn-join">Join Project</button>
-                </div>
-            </div>
-
-            <!-- Project Card 4: Robotics/Tech -->
-            <div class="project-card border-pink">
-                <div class="card-header-flex">
-                    <h4>Robot Kit Assembly & Training</h4>
-                    <span class="tag-location">3 km radius</span>
-                </div>
-                <p>
-                    Need C++ or Arduino expertise to help organize a weekend workshop for middle schoolers building simple obstacle-avoiding robots. Curriculum provided.
-                </p>
-                <div class="tags-flex">
-                    <span class="tag-skill">#Arduino</span>
-                    <span class="tag-skill">#C++</span>
-                </div>
-                <div class="card-footer-flex">
-                    <div>Team Size: 4/6</div>
-                    <button class="btn-join">Join Project</button>
-                </div>
-            </div>
+            {% endfor %}
 
         </div>
 

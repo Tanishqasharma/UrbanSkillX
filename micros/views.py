@@ -22,7 +22,8 @@ def Bookings(request):
     return render(request, 'micros/booking.html', {"bookingform": form})
 
 def Communities(request):
-    return render(request, 'micros/community.html', {})
+    projects = Project.objects.all()
+    return render(request, 'micros/community.html', {"projects": projects})
 
 def Credits(request):
     return render(request, 'micros/credits.html', {})
@@ -40,6 +41,7 @@ def Reputations(request):
     else:
         form = ReputationForm()
     return render(request, 'micros/reputation.html', {"reputationform": form})
+
 
 def CreateCommunities(request):
     comm_form = CommunityForm(prefix="community")
