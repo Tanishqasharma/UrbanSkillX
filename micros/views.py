@@ -14,9 +14,11 @@ def Bookings(request):
     if request.method == 'POST':
         form = BookingForm(request.POST)
         if form.is_valid():
-            booking = form.save()
-            messages.success(f"Booking Successfully created for {booking.user} at {booking.date} !!")
-            return redirect('micros:booking_url')
+            booking = form.save(commit=False)
+            booking.user = request.user
+            booking.save()
+            messages.success(request, f"Booking Successfully created for {booking.user.username} at {booking.booking_date} !!")
+            return redirect('micros:ticket_url')
     else:
         form = BookingForm()
     return render(request, 'micros/booking.html', {"bookingform": form})
@@ -27,6 +29,10 @@ def Communities(request):
 
 def Credits(request):
     return render(request, 'micros/credits.html', {})
+
+def Tickets(request):
+    booking = Booking.objects.filter(user=request.user).last()
+    return render(request, 'micros/ticket.html', {"booking": booking})
 
 @login_required
 def Reputations(request):
