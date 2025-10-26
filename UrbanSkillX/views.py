@@ -32,8 +32,9 @@ def about(request):
     return render(request, 'UrbanSkillX/aboutus.html')
 
 def profile(request):
+    bookings = Booking.objects.all()
     reputations = Reputation.objects.all()  
-    return render(request, 'UrbanSkillX/profile.html', {'reputations': reputations})
+    return render(request, 'UrbanSkillX/profile.html', {'reputations': reputations, 'bookings': bookings})
 
 def makeportfolio(request):
     return render(request, 'UrbanSkillX/makeportfolio.html', {})

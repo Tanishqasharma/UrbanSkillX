@@ -34,6 +34,9 @@ def Tickets(request):
     booking = Booking.objects.filter(user=request.user).last()
     return render(request, 'micros/ticket.html', {"booking": booking})
 
+def Map(request):
+    return render(request, 'micros/map.html', {})
+
 @login_required
 def Reputations(request):
     if request.method == 'POST':

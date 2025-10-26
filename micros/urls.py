@@ -18,4 +18,5 @@ urlpatterns = [
     path('create-community/', views.CreateCommunities, name="create-community_url"),
     path('reputation/', views.Reputations, name="reputation_url"),
     path('ticket/', views.Tickets, name="ticket_url"),
+    path('map/', views.Map, name="map_url"),
 ]

@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills Map - Find Local Talent</title>
+    <!-- Tailwind CSS REMOVED -->
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        /* --- ADDED: Your Theme Colors --- */
+        :root {
+            --color-primary-light: #F3ECFF; /* Light Lavender/Purple for hero BG */
+            --color-primary-dark: #8E7ACF;  /* Medium Purple for text/links */
+            --color-accent: #A57EFE;        /* Bright Purple for main CTA */
+            --color-text-dark: #374151;     /* Dark Grey for main text */
+            --color-text-header: #33334d;   /* Darker Purple/Blue for main headers */
+            --color-white: #ffffff;
+            --color-gray-50: #f9fafb;
+            --color-gray-100: #f3f4f6;
+            --color-gray-200: #e5e7eb;
+            --color-gray-300: #d1d5db;
+            --color-gray-400: #9ca3af;
+            --color-gray-500: #6b7280;
+            --color-gray-600: #4b5563;
+            --color-gray-700: #374151;
+            --color-gray-800: #1f2937;
+            --color-gray-900: #111827;
+            --color-black: #000000;
+            --color-yellow-400: #facc15;
+        }
+
+        /* --- Base Styles --- */
+        body {
+            background-color: var(--color-gray-50);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif; /* Assuming Inter font */
+            margin: 0;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        @media (min-width: 640px) {
+            .container { max-width: 640px; }
+        }
+        @media (min-width: 768px) {
+            .container { max-width: 768px; }
+        }
+        @media (min-width: 1024px) {
+            .container { max-width: 1024px; }
+        }
+        @media (min-width: 1280px) {
+            .container { max-width: 1280px; }
+            .max-w-7xl { max-width: 80rem; } /* Specific max-width */
+        }
+        @media (min-width: 1536px) {
+            .container { max-width: 1536px; }
+        }
+
+        /* --- Header Styles --- */
+        .page-header {
+            background-color: var(--color-white);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid var(--color-gray-200);
+        }
+        .header-content {
+            padding-top: 1.5rem;
+            padding-bottom: 1.5rem;
+        }
+        .header-text-center { text-align: center; }
+        .header-title {
+            font-size: 2.25rem; /* text-4xl */
+            line-height: 2.5rem;
+            font-weight: 700; /* font-bold */
+            color: var(--color-black);
+            margin-bottom: 0.75rem; /* mb-3 */
+        }
+        .header-subtitle {
+            font-size: 1.25rem; /* text-xl */
+            line-height: 1.75rem;
+            color: var(--color-gray-600);
+            max-width: 42rem; /* max-w-2xl */
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* --- Main Content & Layout --- */
+        .main-content-padding {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+        }
+        .main-container-max-width {
+            max-width: 80rem; /* max-w-7xl */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .main-grid {
+            display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 2rem; /* gap-8 */
+        }
+        @media (min-width: 1280px) { /* xl: */
+            .main-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+            .main-grid .controls-column { grid-column: span 1 / span 1; }
+            .main-grid .map-results-column { grid-column: span 3 / span 3; }
+        }
+        .results-grid {
+             display: grid;
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+            gap: 1.5rem; /* gap-6 */
+        }
+         @media (min-width: 768px) { /* md: */
+            .results-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+        @media (min-width: 1024px) { /* lg: */
+            .results-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        }
+
+        /* --- Location Access Section --- */
+        .location-access-card {
+            background-color: var(--color-white);
+            border-radius: 1rem; /* rounded-2xl */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--color-gray-200);
+            padding: 2rem; /* p-8 */
+            margin-bottom: 2rem; /* mb-8 */
+            text-align: center;
+        }
+        .location-access-inner { max-width: 42rem; margin-left: auto; margin-right: auto; }
+        .location-icon-container {
+            width: 5rem; /* w-20 */
+            height: 5rem; /* h-20 */
+            background-color: var(--color-accent);
+            border-radius: 9999px; /* rounded-full */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+        .location-icon-container i {
+            color: var(--color-white);
+            font-size: 1.5rem; /* text-2xl */
+        }
+        .location-access-title {
+            font-size: 1.875rem; /* text-3xl */
+            line-height: 2.25rem;
+            font-weight: 700; /* font-bold */
+            color: var(--color-black);
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        .location-access-text {
+            color: var(--color-gray-600);
+            font-size: 1.125rem; /* text-lg */
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+        .location-access-privacy {
+            font-size: 0.875rem; /* text-sm */
+            color: var(--color-gray-500);
+            margin-top: 1rem; /* mt-4 */
+        }
+        .location-access-privacy i { margin-right: 0.25rem; /* mr-1 */ }
+
+        /* --- Map Interface Section --- */
+        .hidden { display: none; }
+        .controls-panel-sticky { position: sticky; top: 1.5rem; /* top-6 */ }
+        .controls-panel-padding { padding: 1.5rem; /* p-6 */ }
+        .controls-title {
+            font-size: 1.25rem; /* text-xl */
+            line-height: 1.75rem;
+            font-weight: 700; /* font-bold */
+            color: var(--color-black);
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+        .location-info-box {
+            margin-bottom: 1.5rem; /* mb-6 */
+            padding: 1rem; /* p-4 */
+            background-color: var(--color-gray-50);
+            border-radius: 0.5rem; /* rounded-lg */
+        }
+        .flex-items-center { display: flex; align-items: center; }
+        .margin-bottom-2 { margin-bottom: 0.5rem; /* mb-2 */ }
+        .margin-right-2 { margin-right: 0.5rem; /* mr-2 */ }
+        .font-semibold { font-weight: 600; }
+        .text-black { color: var(--color-black); }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-gray-600 { color: var(--color-gray-600); }
+        .margin-bottom-3 { margin-bottom: 0.75rem; /* mb-3 */ }
+        .w-full { width: 100%; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .margin-bottom-6 { margin-bottom: 1.5rem; /* mb-6 */ }
+        .block { display: block; }
+        .label-text {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--color-black);
+            margin-bottom: 0.75rem;
+        }
+        .label-text i { margin-right: 0.5rem; }
+        .range-slider {
+            width: 100%;
+            height: 0.5rem; /* h-2 */
+            background-color: var(--color-gray-200);
+            border-radius: 0.5rem; /* rounded-lg */
+            appearance: none;
+            cursor: pointer;
+            accent-color: var(--color-accent);
+        }
+        .flex-justify-between { display: flex; justify-content: space-between; }
+        .margin-top-2 { margin-top: 0.5rem; /* mt-2 */ }
+        .category-filter-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem; /* space-y-2 */
+            max-height: 15rem; /* max-h-60 */
+            overflow-y: auto;
+        }
+        .category-label {
+            display: flex;
+            align-items: center;
+            padding: 0.5rem; /* p-2 */
+            border-radius: 0.25rem; /* rounded */
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .category-label:hover { background-color: var(--color-gray-50); }
+        .category-checkbox {
+            border-radius: 0.25rem; /* rounded */
+            border-color: var(--color-gray-300);
+            color: var(--color-accent); /* text-accent */
+            /* focus:ring-accent - requires JS or different approach */
+        }
+        .margin-left-3 { margin-left: 0.75rem; /* ml-3 */ }
+        .text-gray-700 { color: var(--color-gray-700); }
+        .text-gray-400 { color: var(--color-gray-400); }
+        .results-counter-box {
+            padding: 1rem; /* p-4 */
+            background-color: var(--color-accent);
+            color: var(--color-white);
+            border-radius: 0.5rem; /* rounded-lg */
+            text-align: center;
+        }
+        .results-counter-count { font-size: 1.5rem; line-height: 2rem; font-weight: 700; /* text-2xl font-bold */ }
+
+        /* --- Map & Results Column --- */
+        .map-container-card {
+            background-color: var(--color-white);
+            border-radius: 1rem; /* rounded-2xl */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--color-gray-200);
+            padding: 1.5rem; /* p-6 */
+            margin-bottom: 2rem; /* mb-8 */
+        }
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem; /* mb-6 */
+        }
+        .results-title { font-size: 1.5rem; line-height: 2rem; font-weight: 700; color: var(--color-black); /* text-2xl font-bold */ }
+        .results-summary-text { color: var(--color-gray-600); }
+
+        /* --- Skill Card (in grid) --- */
+        .skill-card {
+            background-color: var(--color-white);
+            border-radius: 0.75rem; /* rounded-xl */
+            padding: 1.5rem; /* p-6 */
+        }
+        .skill-card-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1rem; /* mb-4 */ }
+        .skill-card-icon-area { display: flex; align-items: center; gap: 0.75rem; /* space-x-3 */ }
+        .skill-card-icon-box {
+            width: 3rem; /* w-12 */
+            height: 3rem; /* h-12 */
+            background-color: var(--color-gray-100);
+            border-radius: 0.5rem; /* rounded-lg */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .skill-card-icon-box i { color: var(--color-black); }
+        .skill-card-title { font-weight: 700; /* font-bold */ color: var(--color-black); }
+        .skill-card-category { font-size: 0.875rem; /* text-sm */ color: var(--color-gray-500); }
+        .skill-card-price-area { text-align: right; }
+        .skill-card-price { font-weight: 700; /* font-bold */ color: var(--color-black); font-size: 1.125rem; /* text-lg */ }
+        .skill-card-price-unit { color: var(--color-gray-500); font-size: 0.875rem; /* text-sm */ }
+        .skill-card-description {
+            color: var(--color-gray-600);
+            font-size: 0.875rem; /* text-sm */
+            margin-bottom: 1rem; /* mb-4 */
+            /* line-clamp-2 equivalent */
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .skill-card-owner-rating { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; /* mb-4 */ }
+        .skill-card-owner-info { display: flex; align-items: center; gap: 0.5rem; /* space-x-2 */ }
+        .skill-card-owner-avatar { width: 1.5rem; height: 1.5rem; background-color: var(--color-gray-300); border-radius: 9999px; /* rounded-full */ }
+        .skill-card-owner-name { font-size: 0.875rem; /* text-sm */ color: var(--color-gray-700); }
+        .skill-card-rating { display: flex; align-items: center; gap: 0.25rem; /* space-x-1 */ }
+        .skill-card-rating i { color: var(--color-yellow-400); font-size: 0.875rem; /* text-sm */ }
+        .skill-card-rating-value { font-size: 0.875rem; /* text-sm */ color: var(--color-gray-700); }
+        .skill-card-details { display: flex; align-items: center; justify-content: space-between; font-size: 0.875rem; /* text-sm */ color: var(--color-gray-500); margin-bottom: 1rem; /* mb-4 */ }
+        .skill-card-details span i { margin-right: 0.25rem; /* mr-1 */ }
+        .skill-card-contact-btn {
+            width: 100%;
+            background-color: var(--color-accent);
+            color: var(--color-white);
+            padding-top: 0.75rem; /* py-3 */
+            padding-bottom: 0.75rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            font-weight: 600; /* font-semibold */
+            transition: background-color 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .skill-card-contact-btn:hover { background-color: var(--color-primary-dark); }
+
+        /* --- Loading / Empty States --- */
+        .loading-empty-state { text-align: center; padding-top: 3rem; padding-bottom: 3rem; /* py-12 */ }
+        .loading-spinner-container { margin-left: auto; margin-right: auto; margin-bottom: 1rem; /* mb-4 */ }
+        .empty-state-icon-container {
+            width: 4rem; /* w-16 */
+            height: 4rem; /* h-16 */
+            background-color: var(--color-gray-100);
+            border-radius: 9999px; /* rounded-full */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 1rem; /* mb-4 */
+        }
+        .empty-state-icon-container i { color: var(--color-gray-400); font-size: 1.25rem; /* text-xl */ }
+        .empty-state-title { font-size: 1.25rem; /* text-xl */ line-height: 1.75rem; font-weight: 600; /* font-semibold */ color: var(--color-gray-900); margin-bottom: 0.5rem; /* mb-2 */ }
+
+        /* --- Footer Styles --- */
+        .page-footer {
+            background-color: var(--color-gray-900);
+            color: var(--color-white);
+            padding-top: 3rem; /* py-12 */
+            padding-bottom: 3rem;
+            margin-top: 4rem; /* mt-16 */
+        }
+        .footer-content { text-align: center; }
+        .footer-logo-area { display: flex; align-items: center; justify-content: center; gap: 0.5rem; /* space-x-2 */ margin-bottom: 1rem; /* mb-4 */ }
+        .footer-logo-area i { font-size: 1.5rem; /* text-2xl */ color: var(--color-white); }
+        .footer-logo-area span { font-size: 1.25rem; /* text-xl */ line-height: 1.75rem; font-weight: 700; /* font-bold */ }
+        .footer-description { color: var(--color-gray-400); max-width: 42rem; /* max-w-2xl */ margin-left: auto; margin-right: auto; margin-bottom: 1.5rem; /* mb-6 */ }
+        .footer-social-links { display: flex; justify-content: center; gap: 1.5rem; /* space-x-6 */ }
+        .footer-social-link { color: var(--color-gray-400); transition: color 0.2s; text-decoration: none; }
+        .footer-social-link:hover { color: var(--color-white); }
+        .footer-copyright-area { border-top: 1px solid var(--color-gray-800); margin-top: 2rem; /* mt-8 */ padding-top: 2rem; /* pt-8 */ text-align: center; color: var(--color-gray-400); }
+
+        /* --- Existing Custom Styles (Map, Markers, Buttons) --- */
+        /* Map container */
+        .skills-map-container {
+            height: 600px;
+            width: 100%;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #e5e5e5;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Custom marker styles */
+        .user-location-marker {
+            width: 35px;
+            height: 35px;
+            background: var(--color-accent);
+            border: 3px solid var(--color-white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-white);
+            font-size: 14px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+
+        .skill-marker {
+            width: 32px;
+            height: 32px;
+            background: var(--color-white);
+            border: 2px solid var(--color-primary-dark);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-primary-dark);
+            font-size: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .skill-marker:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        /* Popup styling */
+        .leaflet-popup-content {
+            margin: 12px 16px;
+            min-width: 250px;
+            font-family: 'Inter', sans-serif; /* Changed font */
+        }
+        .skill-popup { padding: 8px 0; }
+        .skill-popup h4 { font-weight: 700; font-size: 1.125rem; color: var(--color-black); margin-bottom: 0.25rem; }
+        .skill-popup .category-tag { display: inline-block; background-color: var(--color-gray-100); color: var(--color-black); font-size: 0.75rem; padding: 0.25rem 0.5rem; border-radius: 0.25rem; margin-bottom: 0.5rem; }
+        .skill-popup .description-text { color: var(--color-gray-600); font-size: 0.875rem; margin-bottom: 0.75rem; }
+        .skill-popup .details-line { display: flex; justify-content: space-between; align-items: center; font-size: 0.875rem; }
+        .skill-popup .owner-name { color: var(--color-gray-500); }
+        .skill-popup .rate-text { font-weight: 700; color: var(--color-black); }
+        .skill-popup button {
+            width: 100%;
+            margin-top: 0.75rem;
+            background: var(--color-accent);
+            color: var(--color-white);
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem; /* rounded-lg */
+            transition: background-color 0.2s;
+            font-weight: 600; /* font-semibold */
+            border: none;
+            cursor: pointer;
+        }
+        .skill-popup button:hover { background: var(--color-primary-dark); }
+
+        /* Custom button styles */
+        .btn-map-primary {
+            background: var(--color-accent);
+            color: var(--color-white);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid var(--color-accent);
+            cursor: pointer;
+            font-size: 1.125rem; /* text-lg */
+            display: inline-flex; /* Added */
+            align-items: center; /* Added */
+        }
+         .btn-map-primary i { margin-right: 0.75rem; /* mr-3 */ }
+        .btn-map-primary:hover {
+            background: var(--color-primary-dark);
+            border-color: var(--color-primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(130, 91, 237, 0.4);
+        }
+
+        .btn-map-outline {
+            background: var(--color-white);
+            color: var(--color-primary-dark);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 2px solid var(--color-primary-dark);
+             cursor: pointer;
+             display: inline-flex; /* Added */
+             align-items: center; /* Added */
+        }
+         .btn-map-outline i { margin-right: 0.5rem; /* mr-2 */ }
+        .btn-map-outline:hover {
+            background: var(--color-primary-dark);
+            color: var(--color-white);
+            transform: translateY(-2px);
+        }
+
+        /* Filter controls */
+        .map-controls-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Skill cards */
+        .skill-card {
+            transition: all 0.3s ease;
+            border: 1px solid #e5e5e5;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            border-color: var(--color-primary-dark);
+        }
+
+        /* Loading animation */
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--color-accent);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Checkbox styling - Plain CSS does not have direct equivalent for Tailwind's text-* focus:ring-* classes easily.
+           Using accent-color is the modern way */
+        input[type="checkbox"] {
+           accent-color: var(--color-accent);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .skills-map-container {
+                height: 400px;
+            }
+
+            .map-controls-panel {
+                position: relative !important; /* Overrides sticky */
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body class=""> <!-- Removed Tailwind classes -->
+    <!-- Header -->
+    <header class="page-header">
+        <div class="container header-content">
+            <div class="header-text-center">
+                <h1 class="header-title">Find Local Skills & Talent</h1>
+                <p class="header-subtitle">
+                    Discover skilled people in your area and connect for learning, collaboration, and skill exchange
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container main-content-padding">
+        <div class="main-container-max-width">
+            <!-- Location Access Section -->
+            <div id="locationAccess" class="location-access-card">
+                <div class="location-access-inner">
+                    <div class="location-icon-container">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h2 class="location-access-title">Find Skills Near You</h2>
+                    <p class="location-access-text">
+                        Enable location services to discover talented people in your neighborhood.
+                        Connect for learning, teaching, and collaboration.
+                    </p>
+                    <button id="enableLocationBtn" class="btn-map-primary">
+                        <i class="fas fa-map-marker-alt"></i>Enable Location & Explore Map
+                    </button>
+                    <p class="location-access-privacy">
+                        <i class="fas fa-lock"></i>Your location data is secure and never shared with third parties
+                    </p>
+                </div>
+            </div>
+
+            <!-- Map Interface (Initially Hidden) -->
+            <div id="mapInterface" class="hidden">
+                <div class="main-grid">
+                    <!-- Controls Panel -->
+                    <div class="controls-column">
+                        <div class="map-controls-panel controls-panel-padding controls-panel-sticky">
+                            <h3 class="controls-title">Map Controls</h3>
+
+                            <!-- Location Info -->
+                            <div class="location-info-box">
+                                <div class="flex-items-center margin-bottom-2">
+                                    <i class="fas fa-location-dot text-black margin-right-2"></i>
+                                    <h4 class="font-semibold text-black">Your Location</h4>
+                                </div>
+                                <p id="currentLocation" class="text-sm text-gray-600 margin-bottom-3">Detecting your location...</p>
+                                <button id="refreshLocationBtn" class="w-full btn-map-outline py-2 text-sm">
+                                    <i class="fas fa-sync-alt"></i>Refresh Location
+                                </button>
+                            </div>
+
+                            <!-- Radius Filter -->
+                            <div class="margin-bottom-6">
+                                <label class="block label-text">
+                                    <i class="fas fa-ruler"></i>Search Radius
+                                </label>
+                                <input type="range" id="radiusSlider" min="1" max="50" value="10" class="range-slider">
+                                <div class="flex-justify-between text-sm text-gray-600 margin-top-2">
+                                    <span>1 km</span>
+                                    <span id="radiusValue" class="font-semibold text-black">10 km</span>
+                                    <span>50 km</span>
+                                </div>
+                            </div>
+
+                            <!-- Category Filters -->
+                            <div class="margin-bottom-6">
+                                <label class="block label-text">
+                                    <i class="fas fa-filter"></i>Skill Categories
+                                </label>
+                                <div class="category-filter-list">
+                                    <label class="category-label">
+                                        <input type="checkbox" name="category" value="all" checked class="category-checkbox">
+                                        <span class="margin-left-3 text-gray-700">All Categories</span>
+                                    </label>
+                                    <label class="category-label">
+                                        <input type="checkbox" name="category" value="Technology" class="category-checkbox">
+                                        <span class="margin-left-3 text-gray-700">
+                                            <i class="fas fa-laptop-code margin-right-2 text-gray-400"></i>Technology
+                                        </span>
+                                    </label>
+                                    <label class="category-label">
+                                        <input type="checkbox" name="category" value="Arts" class="category-checkbox">
+                                        <span class="margin-left-3 text-gray-700">
+                                            <i class="fas fa-palette margin-right-2 text-gray-400"></i>Arts & Creative
+                                        </span>
+                                    </label>
+                                    <label class="category-label">
+                                        <input type="checkbox" name="category" value="Sports" class="category-checkbox">
+                                        <span class="margin-left-3 text-gray-700">
+                                            <i class="fas fa-running margin-right-2 text-gray-400"></i>Sports & Fitness
+                                        </span>
+                                    </label>
+                                    <label class="category-label">
+                                        <input type="checkbox" name="category" value="Education" class="category-checkbox">
+                                        <span class="margin-left-3 text-gray-700">
+                                            <i class="fas fa-graduation-cap margin-right-2 text-gray-400"></i>Education
+                                        </span>
+                                    </label>
+                                    <label class="category-label">
+                                        <input type="checkbox" name="category" value="Health" class="category-checkbox">
+                                        <span class="margin-left-3 text-gray-700">
+                                            <i class="fas fa-heartbeat margin-right-2 text-gray-400"></i>Health & Wellness
+                                        </span>
+                                    </label>
+                                    <label class="category-label">
+                                        <input type="checkbox" name="category" value="Languages" class="category-checkbox">
+                                        <span class="margin-left-3 text-gray-700">
+                                            <i class="fas fa-language margin-right-2 text-gray-400"></i>Languages
+                                        </span>
+                                    </label>
+                                    <label class="category-label">
+                                        <input type="checkbox" name="category" value="Other" class="category-checkbox">
+                                        <span class="margin-left-3 text-gray-700">
+                                            <i class="fas fa-star margin-right-2 text-gray-400"></i>Other Skills
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Results Counter -->
+                            <div class="results-counter-box">
+                                <p class="text-sm">Skills Found</p>
+                                <p id="skillsCount" class="results-counter-count">0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map and Results -->
+                    <div class="map-results-column">
+                        <!-- Map Container -->
+                        <div class="map-container-card">
+                            <div id="skillsMap" class="skills-map-container"></div>
+                        </div>
+
+                        <!-- Skills Results -->
+                        <div id="skillsResults">
+                            <div class="results-header">
+                                <h3 class="results-title">Available Skills Nearby</h3>
+                                <div id="resultsSummary" class="results-summary-text"></div>
+                            </div>
+
+                            <div id="skillsGrid" class="results-grid">
+                                <!-- Skills will be loaded here -->
+                            </div>
+
+                            <!-- Loading State -->
+                            <div id="loadingState" class="hidden loading-empty-state">
+                                <div class="loading-spinner loading-spinner-container"></div>
+                                <p class="text-gray-600">Finding skills near you...</p>
+                            </div>
+
+                            <!-- Empty State -->
+                            <div id="emptyState" class="hidden loading-empty-state">
+                                <div class="empty-state-icon-container">
+                                    <i class="fas fa-search"></i>
+                                </div>
+                                <h4 class="empty-state-title">No skills found</h4>
+                                <p class="text-gray-600">Try adjusting your search radius or categories</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="page-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo-area">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>LocalSkills Map</span>
+                </div>
+                <p class="footer-description">
+                    Connecting communities through skill sharing and local talent discovery
+                </p>
+                <div class="footer-social-links">
+                    <a href="#" class="footer-social-link"> <i class="fab fa-twitter"></i> </a>
+                    <a href="#" class="footer-social-link"> <i class="fab fa-facebook"></i> </a>
+                    <a href="#" class="footer-social-link"> <i class="fab fa-linkedin"></i> </a>
+                </div>
+            </div>
+            <div class="footer-copyright-area">
+                <p>&copy; 2024 LocalSkills Map. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Main JavaScript (No changes needed in JS) -->
+    <script>
+        // Location Service
+        class LocationService {
+            constructor() {
+                this.userLocation = null;
+            }
+
+            getCurrentLocation() {
+                return new Promise((resolve, reject) => {
+                    if (!navigator.geolocation) {
+                        reject(new Error('Geolocation is not supported by this browser.'));
+                        return;
+                    }
+
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            this.userLocation = {
+                                latitude: position.coords.latitude,
+                                longitude: position.coords.longitude,
+                                accuracy: position.coords.accuracy
+                            };
+                            resolve(this.userLocation);
+                        },
+                        (error) => {
+                            reject(new Error(this.getErrorMessage(error)));
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 15000,
+                            maximumAge: 60000
+                        }
+                    );
+                });
+            }
+
+            getErrorMessage(error) {
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        return "Location access was denied. Please enable location permissions in your browser settings.";
+                    case error.POSITION_UNAVAILABLE:
+                        return "Location information is unavailable. Please check your connection and try again.";
+                    case error.TIMEOUT:
+                        return "Location request timed out. Please try again.";
+                    default:
+                        return "An unknown error occurred while getting your location.";
+                }
+            }
+
+            calculateDistance(lat1, lon1, lat2, lon2) {
+                const R = 6371;
+                const dLat = this.deg2rad(lat2 - lat1);
+                const dLon = this.deg2rad(lon2 - lon1);
+                const a =
+                    Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) *
+                    Math.sin(dLon/2) * Math.sin(dLon/2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                return R * c;
+            }
+
+            deg2rad(deg) {
+                return deg * (Math.PI/180);
+            }
+
+            async getAddressFromCoords(lat, lng) {
+                try {
+                    const response = await fetch(
+                        `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`
+                    );
+                    const data = await response.json();
+                    return {
+                        city: data.city,
+                        country: data.countryName,
+                        locality: data.locality,
+                        fullAddress: data.localityInfo?.administrative[2]?.name || data.city
+                    };
+                } catch (error) {
+                    console.error('Error getting address:', error);
+                    return null;
+                }
+            }
+        }
+
+        // Skills Map Class
+        class SkillsMap {
+            constructor(containerId) {
+                this.map = null;
+                this.userMarker = null;
+                this.skillMarkers = [];
+                this.containerId = containerId;
+                this.userLocation = null;
+                this.radiusCircle = null;
+            }
+
+            initMap(lat = 40.7128, lng = -74.0060, zoom = 10) {
+                this.map = L.map(this.containerId).setView([lat, lng], zoom);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 18
+                }).addTo(this.map);
+
+                return this.map;
+            }
+
+            addUserLocation(lat, lng, username = 'Your Location') {
+                if (this.userMarker) {
+                    this.map.removeLayer(this.userMarker);
+                }
+
+                this.userLocation = { lat, lng };
+
+                const userIcon = L.divIcon({
+                    html: `<div class="user-location-marker">
+                               <i class="fas fa-user"></i>
+                             </div>`,
+                    className: 'user-location-marker-container', // Keep class for potential targeting
+                    iconSize: [35, 35],
+                    iconAnchor: [17, 17]
+                });
+
+                this.userMarker = L.marker([lat, lng], { icon: userIcon })
+                    .addTo(this.map)
+                    .bindPopup(`<strong>${username}</strong><br>This is your current location`)
+                    .openPopup();
+
+                this.map.setView([lat, lng], 13);
+            }
+
+            addSkillMarker(skill) {
+                const skillIcon = L.divIcon({
+                    html: `<div class="skill-marker skill-${skill.category}">
+                               <i class="fas ${this.getSkillIcon(skill.category)}"></i>
+                             </div>`,
+                    className: `skill-marker-container skill-${skill.category}`, // Keep class
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16]
+                });
+
+                const marker = L.marker([skill.location.lat, skill.location.lng], { icon: skillIcon })
+                    .addTo(this.map)
+                    .bindPopup(this.createSkillPopup(skill));
+
+                this.skillMarkers.push(marker);
+                return marker;
+            }
+
+            getSkillIcon(category) {
+                const icons = {
+                    'Technology': 'fa-laptop-code',
+                    'Arts': 'fa-palette',
+                    'Sports': 'fa-running',
+                    'Education': 'fa-graduation-cap',
+                    'Health': 'fa-heartbeat',
+                    'Crafts': 'fa-tools',
+                    'Languages': 'fa-language',
+                    'Other': 'fa-star'
+                };
+                return icons[category] || 'fa-star';
+            }
+
+            createSkillPopup(skill) {
+                // Using existing classes defined in CSS for popup elements
+                return `
+                    <div class="skill-popup">
+                        <h4 class="skill-popup-title">${skill.name}</h4>
+                        <span class="category-tag">${skill.category}</span>
+                        <p class="description-text">${skill.description}</p>
+                        <div class="details-line">
+                            <span class="owner-name">By: ${skill.ownerName}</span>
+                            ${skill.hourlyRate ? `<span class="rate-text">$${skill.hourlyRate}/hr</span>` : ''}
+                        </div>
+                        <button onclick="viewSkill('${skill.id}')">
+                            Connect & Learn
+                        </button>
+                    </div>
+                `;
+            }
+
+            drawRadiusCircle(radiusKm = 10) {
+                if (this.radiusCircle) {
+                    this.map.removeLayer(this.radiusCircle);
+                }
+
+                if (this.userLocation) {
+                    this.radiusCircle = L.circle([this.userLocation.lat, this.userLocation.lng], {
+                        color: 'var(--color-accent)',
+                        fillColor: 'var(--color-accent)',
+                        fillOpacity: 0.1,
+                        weight: 2,
+                        radius: radiusKm * 1000
+                    }).addTo(this.map);
+                }
+            }
+
+            clearSkillMarkers() {
+                this.skillMarkers.forEach(marker => {
+                    this.map.removeLayer(marker);
+                });
+                this.skillMarkers = [];
+            }
+
+            fitBounds() {
+                if (this.skillMarkers.length > 0 && this.userLocation) {
+                    const group = new L.FeatureGroup([...this.skillMarkers, this.userMarker]);
+                    this.map.fitBounds(group.getBounds().pad(0.1));
+                }
+            }
+        }
+
+        // Demo Data
+        const demoSkills = [
+            { id: '1', name: 'Web Development Mentoring', category: 'Technology', description: 'Learn full-stack web development with modern technologies', ownerName: 'Alex Chen', hourlyRate: 45, location: { lat: 40.7282, lng: -73.9942 }, rating: 4.9 },
+            { id: '2', name: 'Yoga & Meditation Classes', category: 'Health', description: 'Beginner to advanced yoga sessions for mind and body wellness', ownerName: 'Maria Garcia', hourlyRate: 30, location: { lat: 40.7505, lng: -73.9934 }, rating: 4.8 },
+            { id: '3', name: 'Spanish Conversation Practice', category: 'Languages', description: 'Improve your Spanish with native speaker conversations', ownerName: 'Carlos Rodriguez', hourlyRate: 25, location: { lat: 40.7414, lng: -74.0054 }, rating: 4.7 },
+            { id: '4', name: 'Guitar Lessons for Beginners', category: 'Arts', description: 'Learn acoustic guitar from basic chords to your favorite songs', ownerName: 'David Kim', hourlyRate: 35, location: { lat: 40.7183, lng: -74.0088 }, rating: 4.9 },
+            { id: '5', name: 'Personal Fitness Training', category: 'Sports', description: 'Customized workout plans and personal training sessions', ownerName: 'Sarah Johnson', hourlyRate: 50, location: { lat: 40.7352, lng: -73.9876 }, rating: 5.0 },
+            { id: '6', name: 'Math & Science Tutoring', category: 'Education', description: 'K-12 and college level math and science tutoring', ownerName: 'Dr. Michael Brown', hourlyRate: 40, location: { lat: 40.7521, lng: -73.9723 }, rating: 4.8 }
+        ];
+
+        // Global variables
+        let locationService;
+        let skillsMap;
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            locationService = new LocationService();
+            skillsMap = new SkillsMap('skillsMap');
+            skillsMap.initMap();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('enableLocationBtn').addEventListener('click', enableLocation);
+            document.getElementById('refreshLocationBtn').addEventListener('click', enableLocation);
+            document.getElementById('radiusSlider').addEventListener('input', function(e) {
+                document.getElementById('radiusValue').textContent = e.target.value + ' km';
+                if (skillsMap.userLocation) {
+                    skillsMap.drawRadiusCircle(parseInt(e.target.value));
+                    // Re-filter/show skills based on new radius
+                    filterSkills(); // Changed from showNearbySkills to filterSkills
+                }
+            });
+            document.querySelectorAll('input[name="category"]').forEach(checkbox => {
+                checkbox.addEventListener('change', filterSkills);
+            });
+        }
+
+        async function enableLocation() {
+            try {
+                // Show loading state
+                document.getElementById('loadingState').classList.remove('hidden');
+                document.getElementById('skillsGrid').innerHTML = ''; // Clear grid
+                document.getElementById('skillsGrid').classList.add('hidden');
+                document.getElementById('emptyState').classList.add('hidden');
+
+                const location = await locationService.getCurrentLocation();
+                const address = await locationService.getAddressFromCoords(location.latitude, location.longitude);
+
+                // Update UI
+                document.getElementById('locationAccess').classList.add('hidden');
+                document.getElementById('mapInterface').classList.remove('hidden');
+                document.getElementById('currentLocation').textContent = address ? `${address.city}, ${address.country}` : 'Location detected';
+
+                // Update map
+                skillsMap.addUserLocation(location.latitude, location.longitude);
+                skillsMap.drawRadiusCircle(parseInt(document.getElementById('radiusSlider').value)); // Use current slider value
+
+                // Show nearby skills
+                filterSkills(); // Use filterSkills to initially populate based on location+filters
+
+            } catch (error) {
+                document.getElementById('loadingState').classList.add('hidden');
+                alert('Location Error: ' + error.message);
+            }
+        }
+
+        // Combined filtering and display function
+        function filterSkills() {
+            if (!skillsMap.userLocation) {
+                 // Don't try to filter if we don't have a user location yet
+                return;
+            }
+
+            const skillsGrid = document.getElementById('skillsGrid');
+            const radius = parseInt(document.getElementById('radiusSlider').value);
+            const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked'))
+                .map(cb => cb.value);
+            const showAllCategories = selectedCategories.includes('all');
+
+            // Show loading
+            document.getElementById('loadingState').classList.remove('hidden');
+            skillsGrid.innerHTML = ''; // Clear previous results
+            skillsGrid.classList.add('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+            skillsMap.clearSkillMarkers();
+
+            setTimeout(() => { // Simulate network delay if needed
+                let foundSkills = 0;
+
+                demoSkills.forEach(skill => {
+                    // 1. Check distance
+                    const distance = locationService.calculateDistance(
+                        skillsMap.userLocation.lat, skillsMap.userLocation.lng,
+                        skill.location.lat, skill.location.lng
+                    );
+
+                    if (distance <= radius) {
+                        // 2. Check category
+                        const categoryMatch = showAllCategories || selectedCategories.includes(skill.category);
+
+                        if (categoryMatch) {
+                            foundSkills++;
+                            // Add to map
+                            skillsMap.addSkillMarker(skill);
+                            // Add to grid
+                            const skillElement = createSkillCardElement(skill, distance);
+                            skillsGrid.appendChild(skillElement);
+                        }
+                    }
+                });
+
+                // Update results UI
+                document.getElementById('skillsCount').textContent = foundSkills;
+                document.getElementById('resultsSummary').textContent = `${foundSkills} skills found within ${radius} km`;
+
+                document.getElementById('loadingState').classList.add('hidden');
+                skillsGrid.classList.remove('hidden');
+
+                if (foundSkills === 0) {
+                    document.getElementById('emptyState').classList.remove('hidden');
+                } else {
+                    document.getElementById('emptyState').classList.add('hidden');
+                    skillsMap.fitBounds(); // Adjust map view
+                }
+            }, 500); // Short delay to show loading spinner
+        }
+
+         // Helper function to create skill card HTML
+        function createSkillCardElement(skill, distance) {
+            const skillElement = document.createElement('div');
+            // Using plain CSS classes defined in the <style> block
+            skillElement.className = 'skill-card';
+            skillElement.innerHTML = `
+                <div class="skill-card-header">
+                    <div class="skill-card-icon-area">
+                        <div class="skill-card-icon-box">
+                            <i class="fas ${skillsMap.getSkillIcon(skill.category)}"></i>
+                        </div>
+                        <div>
+                            <h4 class="skill-card-title">${skill.name}</h4>
+                            <span class="skill-card-category">${skill.category}</span>
+                        </div>
+                    </div>
+                    <div class="skill-card-price-area">
+                        ${skill.hourlyRate ? `<span class="skill-card-price">$${skill.hourlyRate}</span><span class="skill-card-price-unit">/hr</span>` : ''}
+                    </div>
+                </div>
+                <p class="skill-card-description">${skill.description}</p>
+                <div class="skill-card-owner-rating">
+                    <div class="skill-card-owner-info">
+                        <div class="skill-card-owner-avatar"></div>
+                        <span class="skill-card-owner-name">${skill.ownerName}</span>
+                    </div>
+                    <div class="skill-card-rating">
+                        <i class="fas fa-star"></i>
+                        <span class="skill-card-rating-value">${skill.rating}</span>
+                    </div>
+                </div>
+                <div class="skill-card-details">
+                    <span><i class="fas fa-map-marker-alt"></i>${distance.toFixed(1)} km away</span>
+                    <span><i class="fas fa-clock"></i>Available</span>
+                </div>
+                <button onclick="contactSkillOwner('${skill.id}')" class="skill-card-contact-btn">
+                    Contact ${skill.ownerName.split(' ')[0]}
+                </button>
+            `;
+            return skillElement;
+        }
+
+
+        // Action functions (kept simple)
+        function viewSkill(skillId) {
+            alert(`Viewing details for skill: ${skillId}`);
+        }
+
+        function contactSkillOwner(skillId) {
+            const skill = demoSkills.find(s => s.id === skillId);
+            if (skill) {
+                alert(`Contacting ${skill.ownerName} about: ${skill.name}`);
+            }
+        }
+    </script>
+</body>
+</html>
+

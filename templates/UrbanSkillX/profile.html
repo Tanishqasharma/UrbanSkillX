@@ -443,6 +443,23 @@
         .btn-add-review i {
             margin-right: 0.5rem;
         }
+         .ticket-header {
+            background-color: #7C3AED;
+            color: white;
+            padding: 20px 0;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .ticket-body {
+            padding: 30px;
+        }
+
+        .ticket-body h1 {
+            color: #333;
+            font-size: 1.8em;
+            margin-bottom: 25px;
+        }
     </style>
 </head>
 <!-- REMOVED onload="" -->
@@ -576,6 +593,28 @@
             </a>
             </div>
 
+            {% for booking in bookings %}
+             <div class="ticket-body">
+                
+                <h1>Your Session Ticket</h1>
+                
+                <table class="session-details">
+                    <tr>
+                        <td>Date:</td>
+                        <td>{{ booking.booking_date }}</td>
+                    </tr>
+                    <tr>
+                        <td>Time:</td>
+                        <td>{{ booking.booking_time }}</td>
+                    </tr>
+                    <tr>
+                        <td>Booking ID:</td>
+                        <td>#XYZ12345</td>
+                    </tr>
+                </table>
+
+            </div>
+            {% endfor %}
         </section>
 
     </div>
